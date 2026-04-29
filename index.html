@@ -1,0 +1,39 @@
+  <input type="text" id="vardas" placeholder="Jūsų vardas" required>
+        <label>Telefono numeris</label>
+        <input type="tel" id="telefonas" placeholder="+370..." required>
+        <label>Paslauga</label>
+        <select id="paslauga">
+          <option>Botox</option>
+          <option>Lip filleriai</option>
+          <option>Skruostų filleriai</option>
+          <option>Lazerinė epiliacija</option>
+          <option>Veido valymas</option>
+        </select>
+        <button type="submit">Gauti konsultaciją</button>
+      </form>
+    </div>
+
+    <div class="success" id="successDiv">
+      <h2>Ačiū!</h2>
+      <p>Gavome jūsų užklausą. Susisieksime labai greitai.</p>
+    </div>
+
+    <script>
+      document.getElementById('leadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const vardas = document.getElementById('vardas').value;
+        const telefonas = document.getElementById('telefonas').value.replace('+', '');
+        const paslauga = document.getElementById('paslauga').value;
+
+        fetch('https://hook.eu1.make.com/peymmlbabv9mbxrfkuqc19n5bs27uw0k', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vardas, telefonas, paslauga })
+        });
+
+        document.getElementById('formDiv').style.display = 'none';
+        document.getElementById('successDiv').style.display = 'block';
+      });
+    </script>
+  </body>
+  </html>
