@@ -287,7 +287,7 @@
       try {
         const res = await fetch(CHAT_WEBHOOK_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ history: history })
         });
         const data = await res.json();
