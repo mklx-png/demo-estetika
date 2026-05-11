@@ -1,72 +1,318 @@
-  <!DOCTYPE html>                                                                                                         <html lang="lt">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo Estetika — Konsultacija</title>
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Georgia', serif; background: #fdf6f0; color: #333; }
-      .hero { background: #2c2c2c; color: white; text-align: center; padding: 60px 20px 40px; }
-      .hero h1 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 10px; }
-      .hero p { color: #ccc; font-size: 1rem; }
-      .form-section { max-width: 480px; margin: 50px auto; padding: 0 20px; }
-      .form-section h2 { font-size: 1.3rem; margin-bottom: 8px; }
-      .form-section p { color: #777; margin-bottom: 30px; font-size: 0.95rem; }
-      label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-      input, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px;
-  font-size: 1rem; }
-      button { width: 100%; padding: 14px; background: #c9a96e; color: white; border: none; border-radius: 6px;
-  font-size: 1rem; cursor: pointer; letter-spacing: 1px; }
-      button:hover { background: #b8925a; }
-      .success { display: none; text-align: center; padding: 40px 20px; color: #555; }
-      .success h2 { color: #c9a96e; margin-bottom: 10px; }
-    </style>
-  </head>
-  <body>
-    <div class="hero">
-      <h1>DEMO ESTETIKA</h1>
-      <p>Grožio ir estetikos klinika</p>
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Estetika — Konsultacija</title>
+
+  <!-- Cal.com embed -->
+  <script type="text/javascript">
+    (function(C,A,L){let p=function(a,ar){a.q.push(ar);};let d=C.document;C.Cal=C.Cal||function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true;}if(ar[0]===L){const api=function(){p(api,arguments);};const namespace=ar[1];api.q=api.q||[];typeof namespace==="string"?(cal.ns[namespace]=api)&&p(api,ar):p(cal,ar);return;}p(cal,ar);};})(window,"https://app.cal.com/embed/embed.js","init");
+    Cal("init", {origin:"https://cal.com"});
+  </script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Georgia', serif; background: #fdf6f0; color: #333; }
+    .hero { background: #2c2c2c; color: white; text-align: center; padding: 60px 20px 40px; }
+    .hero h1 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 10px; }
+    .hero p { color: #ccc; font-size: 1rem; }
+    .form-section { max-width: 480px; margin: 50px auto; padding: 0 20px; }
+    .form-section h2 { font-size: 1.3rem; margin-bottom: 8px; }
+    .form-section p { color: #777; margin-bottom: 30px; font-size: 0.95rem; }
+    label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
+    button { width: 100%; padding: 14px; background: #c9a96e; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; letter-spacing: 1px; }
+    button:hover { background: #b8925a; }
+    .success { display: none; text-align: center; padding: 40px 20px; color: #555; }
+    .success h2 { color: #c9a96e; margin-bottom: 10px; }
+
+    /* ========== CHAT WIDGET ========== */
+    #chat-bubble {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #c9a96e; color: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 9998; transition: transform 0.2s;
+      font-family: -apple-system, sans-serif;
+    }
+    #chat-bubble:hover { transform: scale(1.08); background: #b8925a; }
+    #chat-bubble svg { width: 28px; height: 28px; }
+    #chat-bubble .pulse {
+      position: absolute; top: -6px; right: -6px;
+      background: #ff4444; color: white; font-size: 11px;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-family: -apple-system, sans-serif;
+    }
+
+    #chat-panel {
+      position: fixed; bottom: 100px; right: 24px;
+      width: 380px; max-width: calc(100vw - 32px);
+      height: 580px; max-height: calc(100vh - 140px);
+      background: white; border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      display: none; flex-direction: column;
+      z-index: 9999; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    #chat-panel.open { display: flex; }
+
+    #chat-header {
+      background: #2c2c2c; color: white; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    #chat-header .clinic-name { font-weight: 600; font-size: 15px; letter-spacing: 1px; }
+    #chat-header .clinic-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+    #chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 0; width: auto; }
+
+    #chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      background: #faf7f3; display: flex; flex-direction: column; gap: 10px;
+    }
+    .msg { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+    .msg.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .msg.ai a { color: #c9a96e; font-weight: 600; }
+    .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+    /* Booking button inside chat */
+    .book-card {
+      align-self: flex-start;
+      background: white;
+      border: 1.5px solid #c9a96e;
+      border-radius: 14px;
+      border-bottom-left-radius: 4px;
+      padding: 14px 16px;
+      max-width: 82%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .book-card p {
+      font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
+    }
+    .book-card button {
+      width: 100%; padding: 11px; background: #c9a96e; color: white;
+      border: none; border-radius: 8px; font-size: 14px;
+      cursor: pointer; font-weight: 600; letter-spacing: 0.5px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .book-card button:hover { background: #b8925a; }
+    .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:.5;}40%{transform:scale(1);opacity:1;} }
+
+    #chat-input-wrap {
+      padding: 12px; background: white; border-top: 1px solid #eee;
+      display: flex; gap: 8px; flex-shrink: 0;
+    }
+    #chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; margin: 0; outline: none; font-family: inherit; }
+    #chat-input:focus { border-color: #c9a96e; }
+    #chat-send { width: auto; padding: 0 18px; background: #c9a96e; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    #chat-send:disabled { background: #ccc; cursor: not-allowed; }
+    #chat-footer { text-align: center; padding: 8px; font-size: 11px; color: #bbb; background: white; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>DEMO ESTETIKA</h1>
+    <p>Grožio ir estetikos klinika</p>
+  </div>
+
+  <div class="form-section" id="formDiv">
+    <h2>Užsiregistruokite konsultacijai</h2>
+    <p>Užpildykite formą ir susisieksime per 60 sekundžių.</p>
+    <form id="leadForm">
+      <label>Vardas</label>
+      <input type="text" id="vardas" placeholder="Jūsų vardas" required>
+      <label>Telefono numeris</label>
+      <input type="tel" id="telefonas" placeholder="+370..." required>
+      <label>Paslauga</label>
+      <select id="paslauga">
+        <option>Botox</option>
+        <option>Lip filleriai</option>
+        <option>Skruostų filleriai</option>
+        <option>Lazerinė epiliacija</option>
+        <option>Veido valymas</option>
+      </select>
+      <button type="submit">Gauti konsultaciją</button>
+    </form>
+  </div>
+
+  <div class="success" id="successDiv">
+    <h2>Ačiū!</h2>
+    <p>Gavome jūsų užklausą. Susisieksime labai greitai.</p>
+  </div>
+
+  <!-- ========== CHAT WIDGET ========== -->
+  <div id="chat-bubble" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    <div class="pulse" id="chat-badge">1</div>
+  </div>
+
+  <div id="chat-panel">
+    <div id="chat-header">
+      <div>
+        <div class="clinic-name">DEMO ESTETIKA</div>
+        <div class="clinic-sub">AI asistentė · atsako per kelias sekundes</div>
+      </div>
+      <button id="chat-close" onclick="toggleChat()">×</button>
     </div>
-
-    <div class="form-section" id="formDiv">
-      <h2>Užsiregistruokite konsultacijai</h2>
-      <p>Užpildykite formą ir susisieksime per 60 sekundžių.</p>
-      <form id="leadForm">
-        <label>Vardas</label>
-        <input type="text" id="vardas" placeholder="Jūsų vardas" required>
-        <label>Telefono numeris</label>
-        <input type="tel" id="telefonas" placeholder="+370..." required>
-        <label>Paslauga</label>
-        <select id="paslauga">
-          <option>Botox</option>
-          <option>Lip filleriai</option>
-          <option>Skruostų filleriai</option>
-          <option>Lazerinė epiliacija</option>
-          <option>Veido valymas</option>
-        </select>
-        <button type="submit">Gauti konsultaciją</button>
-      </form>
+    <div id="chat-messages"></div>
+    <div id="chat-input-wrap">
+      <input type="text" id="chat-input" placeholder="Užduokite klausimą...">
+      <button id="chat-send" onclick="sendMessage()">Siųsti</button>
     </div>
+    <div id="chat-footer">Pokalbis su AI · ne medicininė konsultacija</div>
+  </div>
 
-    <div class="success" id="successDiv">
-      <h2>Ačiū!</h2>
-      <p>Gavome jūsų užklausą. Susisieksime labai greitai.</p>
-    </div>
+  <script>
+    // ===== EXISTING FORM =====
+    document.getElementById('leadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var vardas = document.getElementById('vardas').value;
+      var telefonas = document.getElementById('telefonas').value.replace('+', '');
+      var paslauga = document.getElementById('paslauga').value;
+      var url = 'https://hook.eu1.make.com/peymmlbabv9mbxrfkuqc19n5bs27uw0k?vardas=' + encodeURIComponent(vardas) + '&telefonas=' + encodeURIComponent(telefonas) + '&paslauga=' + encodeURIComponent(paslauga);
+      fetch(url);
+      document.getElementById('formDiv').style.display = 'none';
+      document.getElementById('successDiv').style.display = 'block';
+    });
 
-    <script>
-      document.getElementById('leadForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var vardas = document.getElementById('vardas').value;
-        var telefonas = document.getElementById('telefonas').value.replace('+', '');
-        var paslauga = document.getElementById('paslauga').value;
+    // ===== CHAT CONFIG =====
+    // !!! REPLACE with your new Make.com chat webhook URL !!!
+    const CHAT_WEBHOOK_URL = 'REPLACE_WITH_NEW_MAKE_WEBHOOK_URL';
 
-        var url = 'https://hook.eu1.make.com/peymmlbabv9mbxrfkuqc19n5bs27uw0k?vardas=' + encodeURIComponent(vardas) +
-  '&telefonas=' + encodeURIComponent(telefonas) + '&paslauga=' + encodeURIComponent(paslauga);
-        fetch(url);
+    // Cal.com booking link — change per clinic
+    const CAL_LINK = 'mykolas-cizas-odnpe8/konsultacija';
 
-        document.getElementById('formDiv').style.display = 'none';
-        document.getElementById('successDiv').style.display = 'block';
-      });
-    </script>
-  </body>
-  </html>
+    // Lithuanian + English booking intent keywords
+    const BOOKING_KEYWORDS = [
+      'užsiregistruoti','registruotis','registracija','rezervuoti','rezervacija',
+      'užsisakyti','noriu ateiti','kada galima','kada galiu','laisvas laikas',
+      'laisvi laikai','vizitas','apsilankyti','atvykti','susitikimas',
+      'užrašyti','užrašykite','book','booking','appointment','schedule'
+    ];
+
+    const history = [];
+    let chatOpened = false;
+    let bookingShown = false; // show booking button only once per session
+
+    // ===== BOOKING INTENT DETECTION =====
+    function hasBookingIntent(text) {
+      const lower = text.toLowerCase();
+      return BOOKING_KEYWORDS.some(kw => lower.includes(kw));
+    }
+
+    // ===== BOOKING BUTTON =====
+    function showBookingButton() {
+      if (bookingShown) return;
+      bookingShown = true;
+      const messages = document.getElementById('chat-messages');
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      card.innerHTML = `
+        <p>Pasirinkite jums patogų laiką — užsiregistravimas užtruks mažiau nei minutę.</p>
+        <button onclick="openCal()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+          📅 Rezervuoti vizitą
+        </button>
+      `;
+      messages.appendChild(card);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function openCal() {
+      Cal('openModal', { calLink: CAL_LINK });
+    }
+
+    // ===== CHAT CORE =====
+    function toggleChat() {
+      const panel = document.getElementById('chat-panel');
+      panel.classList.toggle('open');
+      document.getElementById('chat-badge').style.display = 'none';
+      if (!chatOpened && panel.classList.contains('open')) {
+        chatOpened = true;
+        addMessage('ai', 'Sveiki! Esu DEMO ESTETIKA AI asistentė 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
+      }
+    }
+
+    function addMessage(role, text) {
+      const messages = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'msg ' + role;
+      // turn plain URLs into links, strip cal.com links (button handles that)
+      div.innerHTML = text
+        .replace(/https?:\/\/cal\.com\/[^\s]*/g, '')
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+        .trim();
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function showTyping() {
+      const messages = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'typing';
+      div.id = 'typing-indicator';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function hideTyping() {
+      const t = document.getElementById('typing-indicator');
+      if (t) t.remove();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('chat-send');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const userWantsBooking = hasBookingIntent(text);
+
+      addMessage('user', text);
+      history.push({ role: 'user', content: text });
+      input.value = '';
+      input.disabled = true;
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const res = await fetch(CHAT_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ history: history })
+        });
+        const data = await res.json();
+        const reply = data.reply || 'Atsiprašau, įvyko klaida. Pabandykite vėliau.';
+        hideTyping();
+        addMessage('ai', reply);
+        history.push({ role: 'assistant', content: reply });
+
+        // Show booking button if user asked to book OR AI mentioned booking
+        if (userWantsBooking || hasBookingIntent(reply)) {
+          setTimeout(showBookingButton, 400);
+        }
+      } catch (err) {
+        hideTyping();
+        addMessage('ai', 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
+      }
+
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+
+    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
