@@ -288,7 +288,7 @@
         const res = await fetch(CHAT_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ history: history })
+          body: JSON.stringify({ message: text })
         });
         const data = await res.json();
         const reply = data.reply || 'Atsiprašau, įvyko klaida. Pabandykite vėliau.';
