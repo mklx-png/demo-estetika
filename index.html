@@ -441,7 +441,7 @@
         const filtered = slots[day].filter(s => {
           const m = new Date(s.time).getMinutes();
           return m === 0 || m === 30;
-        }).slice(0, 4);
+        });
         if (!filtered.length) continue;
         hasAny = true;
         const d = new Date(day + 'T12:00:00Z');
