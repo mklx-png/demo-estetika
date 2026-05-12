@@ -191,7 +191,7 @@
     .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
     .contact-card input {
       width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
-      font-size: 13px; margin-bottom: 8px; font-family: inherit; outline: none;
+      font-size: 16px; margin-bottom: 8px; font-family: inherit; outline: none;
     }
     .contact-card input:focus { border-color: #c9a96e; }
     .contact-card button {
@@ -246,7 +246,7 @@
       padding: 12px; background: white; border-top: 1px solid #eee;
       display: flex; gap: 8px; flex-shrink: 0;
     }
-    #chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 14px; margin: 0; outline: none; font-family: inherit; }
+    #chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; margin: 0; outline: none; font-family: inherit; }
     #chat-input:focus { border-color: #c9a96e; }
     #chat-send { width: auto; padding: 0 18px; background: #c9a96e; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; }
     #chat-send:disabled { background: #ccc; cursor: not-allowed; }
@@ -263,7 +263,6 @@
         border-radius: 0 !important;
       }
       #chat-bubble { bottom: 16px; right: 16px; }
-      #chat-input, .contact-card input, input, textarea, select { font-size: 16px !important; }
 
       /* Nav */
       nav { padding: 14px 20px; }
@@ -661,14 +660,23 @@
 
     function setBodyLock(locked) {
       if (window.innerWidth > 600) return;
-      if (locked) {
-        document.body.dataset.scrollY = window.scrollY;
-        document.body.style.cssText = 'overflow:hidden;position:fixed;width:100%;top:-' + window.scrollY + 'px';
-      } else {
-        const scrollY = document.body.dataset.scrollY || '0';
-        document.body.style.cssText = '';
-        window.scrollTo(0, parseInt(scrollY));
+      document.body.style.overflow = locked ? 'hidden' : '';
+    }
+
+    function updateChatHeight() {
+      if (window.innerWidth > 600) return;
+      const panel = document.getElementById('chat-panel');
+      if (!panel.classList.contains('open')) return;
+      const vp = window.visualViewport;
+      if (vp) {
+        panel.style.height = vp.height + 'px';
+        panel.style.top = vp.offsetTop + 'px';
       }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateChatHeight);
+      window.visualViewport.addEventListener('scroll', updateChatHeight);
     }
 
     function toggleChat() {
