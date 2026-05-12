@@ -3,23 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Estetika — Konsultacija</title>
-
+  <title>Demo Estetika — Estetinės medicinos klinika Vilniuje</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Georgia', serif; background: #fdf6f0; color: #333; }
-    .hero { background: #2c2c2c; color: white; text-align: center; padding: 60px 20px 40px; }
-    .hero h1 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 10px; }
-    .hero p { color: #ccc; font-size: 1rem; }
-    .form-section { max-width: 480px; margin: 50px auto; padding: 0 20px; }
-    .form-section h2 { font-size: 1.3rem; margin-bottom: 8px; }
-    .form-section p { color: #777; margin-bottom: 30px; font-size: 0.95rem; }
-    label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
-    input, select { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
-    button { width: 100%; padding: 14px; background: #c9a96e; color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; letter-spacing: 1px; }
-    button:hover { background: #b8925a; }
-    .success { display: none; text-align: center; padding: 40px 20px; color: #555; }
-    .success h2 { color: #c9a96e; margin-bottom: 10px; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #333; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px; background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px); border-bottom: 1px solid #f0ebe4;
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; letter-spacing: 3px; color: #2c2c2c; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: #555; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: #c9a96e; }
+    .nav-cta { background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 4px; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
+    .nav-cta:hover { background: #c9a96e; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 50%, #3d3020 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.15) 0%, transparent 60%);
+    }
+    .hero-content { max-width: 1100px; margin: 0 auto; padding: 120px 48px 80px; position: relative; }
+    .hero-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #c9a96e; margin-bottom: 24px; }
+    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 300; color: white; line-height: 1.1; margin-bottom: 24px; }
+    .hero h1 em { font-style: italic; color: #c9a96e; }
+    .hero p { font-size: 1rem; color: #aaa; max-width: 480px; line-height: 1.7; margin-bottom: 40px; }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn-gold { background: #c9a96e; color: white; padding: 14px 32px; border: none; border-radius: 4px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+    .btn-gold:hover { background: #b8925a; }
+    .btn-outline { background: transparent; color: white; padding: 14px 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .btn-outline:hover { border-color: #c9a96e; color: #c9a96e; }
+    .hero-stats { display: flex; gap: 48px; margin-top: 64px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: #c9a96e; }
+    .stat-label { font-size: 0.8rem; color: #777; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+    /* SERVICES */
+    .services { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+    .section-tag { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #c9a96e; margin-bottom: 16px; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: #2c2c2c; margin-bottom: 48px; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .service-card { background: #fdf6f0; border-radius: 12px; padding: 32px 24px; transition: transform 0.2s, box-shadow 0.2s; }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+    .service-icon { font-size: 2rem; margin-bottom: 16px; }
+    .service-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: #2c2c2c; margin-bottom: 8px; }
+    .service-card p { font-size: 0.85rem; color: #777; line-height: 1.6; }
+    .service-price { margin-top: 16px; font-size: 0.9rem; font-weight: 500; color: #c9a96e; }
+
+    /* WHY */
+    .why { background: #2c2c2c; padding: 100px 48px; }
+    .why-inner { max-width: 1100px; margin: 0 auto; }
+    .why .section-title { color: white; }
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; margin-top: 48px; }
+    .why-item { border-left: 2px solid #c9a96e; padding-left: 24px; }
+    .why-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: white; margin-bottom: 10px; }
+    .why-item p { font-size: 0.85rem; color: #888; line-height: 1.7; }
+
+    /* REVIEWS */
+    .reviews { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 48px; }
+    .review-card { background: #fdf6f0; border-radius: 12px; padding: 28px; }
+    .review-stars { color: #c9a96e; font-size: 1rem; margin-bottom: 12px; }
+    .review-text { font-size: 0.9rem; color: #555; line-height: 1.7; margin-bottom: 16px; font-style: italic; }
+    .review-author { font-size: 0.8rem; font-weight: 500; color: #2c2c2c; }
+
+    /* FOOTER */
+    footer { background: #1a1a1a; padding: 48px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; letter-spacing: 3px; color: white; }
+    .footer-info { font-size: 0.8rem; color: #666; line-height: 1.8; }
+    .footer-info a { color: #c9a96e; text-decoration: none; }
 
     /* ========== CHAT WIDGET ========== */
     #chat-bubble {
@@ -65,7 +127,6 @@
       display: flex; align-items: center; justify-content: center;
       font-weight: bold; font-family: -apple-system, sans-serif;
     }
-
     #chat-panel {
       position: fixed; bottom: 100px; right: 24px;
       width: 380px; max-width: calc(100vw - 32px);
@@ -77,7 +138,6 @@
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
     #chat-panel.open { display: flex; }
-
     #chat-header {
       background: #2c2c2c; color: white; padding: 16px 20px;
       display: flex; align-items: center; justify-content: space-between;
@@ -86,7 +146,6 @@
     #chat-header .clinic-name { font-weight: 600; font-size: 15px; letter-spacing: 1px; }
     #chat-header .clinic-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
     #chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 0; width: auto; }
-
     #chat-messages {
       flex: 1; overflow-y: auto; padding: 16px;
       background: #faf7f3; display: flex; flex-direction: column; gap: 10px;
@@ -95,13 +154,10 @@
     .msg.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .msg.ai a { color: #c9a96e; font-weight: 600; }
     .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-
-    /* Booking cards */
     .book-card, .contact-card, .slots-card, .confirm-card {
       align-self: flex-start; background: white;
       border: 1.5px solid #c9a96e; border-radius: 14px; border-bottom-left-radius: 4px;
-      padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-      width: 100%;
+      padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07); width: 100%;
     }
     .book-card p, .contact-card p, .slots-card p, .confirm-card p {
       font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
@@ -114,7 +170,6 @@
     }
     .book-card button:hover { background: #b8925a; }
     .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
-    /* Contact form */
     .contact-card input {
       width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
       font-size: 13px; margin-bottom: 8px; font-family: inherit; outline: none;
@@ -125,7 +180,6 @@
       border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
     }
     .contact-card button:hover { background: #b8925a; }
-    /* Slots */
     .slots-day { margin-bottom: 10px; }
     .slots-day-label { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
     .slot-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -135,17 +189,14 @@
       cursor: pointer; transition: all 0.15s; text-align: center;
     }
     .slot-btn:hover { background: #c9a96e; color: white; }
-    /* Confirm */
     .confirm-card { border-color: #4caf50; }
     .confirm-card .confirm-icon { font-size: 28px; margin-bottom: 6px; }
     .confirm-card strong { color: #333; font-size: 14px; }
-
     .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: 0.2s; }
     .typing span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:.5;}40%{transform:scale(1);opacity:1;} }
-
     #chat-input-wrap {
       padding: 12px; background: white; border-top: 1px solid #eee;
       display: flex; gap: 8px; flex-shrink: 0;
@@ -158,35 +209,123 @@
   </style>
 </head>
 <body>
-  <div class="hero">
-    <h1>DEMO ESTETIKA</h1>
-    <p>Grožio ir estetikos klinika</p>
-  </div>
 
-  <div class="form-section" id="formDiv">
-    <h2>Užsiregistruokite konsultacijai</h2>
-    <p>Užpildykite formą ir susisieksime per 60 sekundžių.</p>
-    <form id="leadForm">
-      <label>Vardas</label>
-      <input type="text" id="vardas" placeholder="Jūsų vardas" required>
-      <label>Telefono numeris</label>
-      <input type="tel" id="telefonas" placeholder="+370..." required>
-      <label>Paslauga</label>
-      <select id="paslauga">
-        <option>Botox</option>
-        <option>Lip filleriai</option>
-        <option>Skruostų filleriai</option>
-        <option>Lazerinė epiliacija</option>
-        <option>Veido valymas</option>
-      </select>
-      <button type="submit">Gauti konsultaciją</button>
-    </form>
-  </div>
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">DEMO ESTETIKA</a>
+    <ul class="nav-links">
+      <li><a href="#paslaugos">Paslaugos</a></li>
+      <li><a href="#apie">Apie mus</a></li>
+      <li><a href="#atsiliepimai">Atsiliepimai</a></li>
+    </ul>
+    <a class="nav-cta" href="#" onclick="toggleChat(); return false;">Registruotis</a>
+  </nav>
 
-  <div class="success" id="successDiv">
-    <h2>Ačiū!</h2>
-    <p>Gavome jūsų užklausą. Susisieksime labai greitai.</p>
-  </div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-tag">Estetinė medicina · Vilnius</span>
+      <h1>Jūsų grožis —<br>mūsų <em>menas</em></h1>
+      <p>Profesionalios estetinės procedūros modernioje klinikoje Vilniaus centre. Botox, filleriai, lazerinė epiliacija ir veido priežiūra.</p>
+      <div class="hero-btns">
+        <button class="btn-gold" onclick="toggleChat()">Registruotis vizitui</button>
+        <button class="btn-outline" onclick="document.getElementById('paslaugos').scrollIntoView({behavior:'smooth'})">Peržiūrėti paslaugas</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">8+</div><div class="stat-label">Metų patirtis</div></div>
+        <div><div class="stat-num">2400+</div><div class="stat-label">Patenkintų klientų</div></div>
+        <div><div class="stat-num">15+</div><div class="stat-label">Procedūrų rūšių</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="paslaugos">
+    <div class="section-tag">Paslaugos</div>
+    <h2 class="section-title">Procedūros jūsų grožiui</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">💉</div>
+        <h3>Botox</h3>
+        <p>Mimikos raukšlių korekcija botulino toksinu. Greitas rezultatas, natūrali išvaizda.</p>
+        <div class="service-price">nuo €120</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">✨</div>
+        <h3>Lip filleriai</h3>
+        <p>Lūpų apimties didinimas ir formavimas hialurono rūgšties preparatais.</p>
+        <div class="service-price">nuo €250</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔆</div>
+        <h3>Lazerinė epiliacija</h3>
+        <p>Ilgalaikis plaukų šalinimas modernia lazerine technologija. Visoms odos tipams.</p>
+        <div class="service-price">nuo €60 / seansas</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🌿</div>
+        <h3>Veido valymas</h3>
+        <p>Giluminis veido valymas ir priežiūra. Odos atjauninimas, porų valymas.</p>
+        <div class="service-price">nuo €70</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="why" id="apie">
+    <div class="why-inner">
+      <div class="section-tag">Kodėl mes</div>
+      <h2 class="section-title">Aukšti standartai,<br>matomi rezultatai</h2>
+      <div class="why-grid">
+        <div class="why-item">
+          <h4>Sertifikuoti specialistai</h4>
+          <p>Visi mūsų specialistai turi medicininį išsilavinimą ir nuolat tobulina kvalifikaciją tarptautiniuose kursuose.</p>
+        </div>
+        <div class="why-item">
+          <h4>Individualus požiūris</h4>
+          <p>Kiekvienam klientui sudarome individualų procedūrų planą, atsižvelgiant į jo poreikius ir odos būklę.</p>
+        </div>
+        <div class="why-item">
+          <h4>Modernia įranga</h4>
+          <p>Naudojame tik sertifikuotus preparatus ir pažangiausią medicininę įrangą iš Europos gamintojų.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews" id="atsiliepimai">
+    <div class="section-tag">Atsiliepimai</div>
+    <h2 class="section-title">Ką sako mūsų klientai</h2>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Puiki klinika! Specialistė labai profesionali, paaiškino viską prieš procedūrą. Rezultatas natūralus ir man labai patinka."</p>
+        <div class="review-author">Rūta M. — Botox</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Lankiausi dėl lip fillerių. Esu labai patenkinta — lūpos atrodo natūraliai ir gražiai, be perdėtumo. Tikrai rekomenduoju!"</p>
+        <div class="review-author">Gabija T. — Lip filleriai</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Lazerinė epiliacija — geriausia investicija! Po 6 seansų rezultatas puikus. Klinika švari, personalas draugiškas."</p>
+        <div class="review-author">Indrė K. — Lazerinė epiliacija</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">DEMO ESTETIKA</div>
+      <div class="footer-info">
+        Gedimino pr. 12, Vilnius &nbsp;·&nbsp; <a href="tel:+37060000000">+370 600 00000</a><br>
+        I–V 10:00–19:00 &nbsp;·&nbsp; VI 10:00–15:00
+      </div>
+    </div>
+  </footer>
 
   <!-- ========== CHAT WIDGET ========== -->
   <div id="chat-tooltip">Pasiteirauk ir užsiregistruok 😊</div>
@@ -212,18 +351,6 @@
   </div>
 
   <script>
-    // ===== EXISTING FORM =====
-    document.getElementById('leadForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var vardas = document.getElementById('vardas').value;
-      var telefonas = document.getElementById('telefonas').value.replace('+', '');
-      var paslauga = document.getElementById('paslauga').value;
-      var url = 'https://hook.eu1.make.com/peymmlbabv9mbxrfkuqc19n5bs27uw0k?vardas=' + encodeURIComponent(vardas) + '&telefonas=' + encodeURIComponent(telefonas) + '&paslauga=' + encodeURIComponent(paslauga);
-      fetch(url);
-      document.getElementById('formDiv').style.display = 'none';
-      document.getElementById('successDiv').style.display = 'block';
-    });
-
     const API = 'https://project-zk9l5.vercel.app/api/chat';
     const BOOKING_KEYWORDS = ['užsiregistruoti','registruotis','registracija','rezervuoti',
       'rezervacija','užsisakyti','kada galima','laisvas laikas','vizitas','apsilankyti',
@@ -236,9 +363,7 @@
     let bookName = '', bookEmail = '', bookEventTypeId = null;
 
     function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
-
     function msgs() { return document.getElementById('chat-messages'); }
-
     function scrollBottom() { msgs().scrollTop = msgs().scrollHeight; }
 
     function addMessage(role, text) {
@@ -262,7 +387,6 @@
     }
     function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
 
-    // ── BOOKING BUTTON ──
     function showBookingButton() {
       if (bookingShown) return; bookingShown = true;
       appendCard(`<div class="book-card">
@@ -273,7 +397,6 @@
         </button></div>`);
     }
 
-    // ── STEP 1: collect name + email ──
     function startBooking() {
       appendCard(`<div class="contact-card">
         <p>Įveskite savo kontaktus:</p>
@@ -283,7 +406,6 @@
       </div>`);
     }
 
-    // ── STEP 2: fetch slots ──
     async function submitContact() {
       const n = document.getElementById('book-name')?.value.trim();
       const e = document.getElementById('book-email')?.value.trim();
@@ -304,14 +426,12 @@
       }
     }
 
-    // ── STEP 3: display slots ──
     function showSlots(slots) {
       const days = Object.keys(slots).slice(0, 5);
       if (!days.length) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
       let hasAny = false;
       for (const day of days) {
-        // filter to :00 and :30 only, max 4 per day
         const filtered = slots[day].filter(s => {
           const m = new Date(s.time).getMinutes();
           return m === 0 || m === 30;
@@ -333,7 +453,6 @@
       appendCard(html);
     }
 
-    // ── STEP 4: create booking ──
     async function bookSlot(start, label) {
       addMessage('user', '🕐 ' + label);
       showTyping();
@@ -355,7 +474,6 @@
       }
     }
 
-    // ── CHAT ──
     function toggleChat() {
       const panel = document.getElementById('chat-panel');
       panel.classList.toggle('open');
