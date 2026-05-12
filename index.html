@@ -408,6 +408,23 @@
       msgs().appendChild(d); scrollBottom();
     }
 
+    function typeMessage(text) {
+      const plain = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'').trim();
+      const d = document.createElement('div');
+      d.className = 'msg ai';
+      msgs().appendChild(d); scrollBottom();
+      const chars = [...plain];
+      let i = 0;
+      function step() {
+        i++;
+        d.textContent = chars.slice(0, i).join('');
+        scrollBottom();
+        if (i < chars.length) setTimeout(step, 18);
+        else d.innerHTML = plain.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+      }
+      step();
+    }
+
     function appendCard(html) {
       const d = document.createElement('div'); d.innerHTML = html;
       msgs().appendChild(d.firstElementChild); scrollBottom();
@@ -463,13 +480,13 @@
         showSlots(data.slots);
       } catch(err) {
         hideTyping();
-        addMessage('ai', 'Nepavyko gauti laisvų laikų. Bandykite vėliau.');
+        typeMessage( 'Nepavyko gauti laisvų laikų. Bandykite vėliau.');
       }
     }
 
     function showSlots(slots) {
       const days = Object.keys(slots).slice(0, 5);
-      if (!days.length) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
+      if (!days.length) { typeMessage( 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
       let hasAny = false;
       for (const day of days) {
@@ -489,7 +506,7 @@
         }
         html += '</div></div>';
       }
-      if (!hasAny) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
+      if (!hasAny) { typeMessage( 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       html += '</div>';
       appendCard(html);
       document.getElementById('chat-panel').classList.add('expanded');
@@ -516,7 +533,7 @@
         </div>`);
       } catch(err) {
         hideTyping();
-        addMessage('ai', 'Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
+        typeMessage( 'Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
       }
     }
 
@@ -549,7 +566,7 @@
         bookingUid = null;
         document.querySelector('.confirm-card')?.remove();
         document.getElementById('chat-panel').classList.add('expanded');
-        addMessage('ai', 'Vizitas atšauktas. Pasirinkite naują laiką:');
+        typeMessage( 'Vizitas atšauktas. Pasirinkite naują laiką:');
         showTyping();
         const r2 = await fetch(API + '?action=slots');
         const d2 = await r2.json();
@@ -560,7 +577,7 @@
       } catch(err) {
         hideTyping();
         if (btn) { btn.disabled = false; btn.textContent = '✏️ Keisti vizito laiką'; }
-        addMessage('ai', 'Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
+        typeMessage( 'Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
       }
     }
 
@@ -571,7 +588,7 @@
       document.getElementById('chat-tooltip').style.display = 'none';
       if (!chatOpened && panel.classList.contains('open')) {
         chatOpened = true;
-        addMessage('ai', 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
+        typeMessage( 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
         setTimeout(showBookingButton, 300);
       }
     }
@@ -590,11 +607,11 @@
         const data = await res.json();
         const reply = data.reply || 'Atsiprašau, įvyko klaida.';
         hideTyping();
-        addMessage('ai', reply);
+        typeMessage( reply);
         if (wantsBooking || hasBookingIntent(reply)) setTimeout(showBookingButton, 400);
       } catch {
         hideTyping();
-        addMessage('ai', 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
+        typeMessage( 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
       }
       input.disabled = false; btn.disabled = false; input.focus();
     }
