@@ -251,6 +251,16 @@
     #chat-send { width: auto; padding: 0 18px; background: #c9a96e; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; }
     #chat-send:disabled { background: #ccc; cursor: not-allowed; }
     #chat-footer { text-align: center; padding: 8px; font-size: 11px; color: #bbb; background: white; flex-shrink: 0; }
+
+    @media (max-width: 600px) {
+      #chat-panel, #chat-panel.open, #chat-panel.expanded {
+        position: fixed; inset: 0; bottom: 0; right: 0;
+        width: 100% !important; height: 100% !important;
+        max-width: 100%; max-height: 100%;
+        border-radius: 0;
+      }
+      #chat-bubble { bottom: 16px; right: 16px; }
+    }
   </style>
 </head>
 <body>
