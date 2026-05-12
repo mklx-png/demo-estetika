@@ -199,7 +199,7 @@
     <div id="chat-header">
       <div>
         <div class="clinic-name">DEMO ESTETIKA</div>
-        <div class="clinic-sub">AI asistentė · atsako per kelias sekundes</div>
+        <div class="clinic-sub">Asistentė</div>
       </div>
       <button id="chat-close" onclick="toggleChat()">×</button>
     </div>
@@ -208,7 +208,7 @@
       <input type="text" id="chat-input" placeholder="Užduokite klausimą...">
       <button id="chat-send" onclick="sendMessage()">Siųsti</button>
     </div>
-    <div id="chat-footer">Pokalbis su AI · ne medicininė konsultacija</div>
+    <div id="chat-footer"></div>
   </div>
 
   <script>
@@ -363,7 +363,7 @@
       document.getElementById('chat-tooltip').style.display = 'none';
       if (!chatOpened && panel.classList.contains('open')) {
         chatOpened = true;
-        addMessage('ai', 'Sveiki! Esu DEMO ESTETIKA AI asistentė 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
+        addMessage('ai', 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
         setTimeout(showBookingButton, 300);
       }
     }
