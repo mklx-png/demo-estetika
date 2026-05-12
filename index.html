@@ -33,6 +33,26 @@
     }
     #chat-bubble:hover { transform: scale(1.08); background: #b8925a; }
     #chat-bubble svg { width: 28px; height: 28px; }
+    #chat-tooltip {
+      position: fixed; bottom: 100px; right: 90px;
+      background: white; color: #333; font-size: 13px;
+      line-height: 1.4; padding: 12px 16px; border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+      max-width: 220px; text-align: center;
+      z-index: 9997; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      animation: fadeInUp 0.5s ease 1s both;
+    }
+    #chat-tooltip::after {
+      content: ''; position: absolute; bottom: -8px; right: 20px;
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     #chat-bubble .pulse {
       position: absolute; top: -6px; right: -6px;
       background: #ff4444; color: white; font-size: 11px;
@@ -143,8 +163,9 @@
   </div>
 
   <!-- ========== CHAT WIDGET ========== -->
+  <div id="chat-tooltip">Spausk čia, kad pašnekėti su virtualiu konsultantu ir užsirezervuoti tau palankiausią vizito laiką</div>
   <div id="chat-bubble" onclick="toggleChat()">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
     <div class="pulse" id="chat-badge">1</div>
   </div>
 
@@ -229,6 +250,7 @@
       const panel = document.getElementById('chat-panel');
       panel.classList.toggle('open');
       document.getElementById('chat-badge').style.display = 'none';
+      document.getElementById('chat-tooltip').style.display = 'none';
       if (!chatOpened && panel.classList.contains('open')) {
         chatOpened = true;
         addMessage('ai', 'Sveiki! Esu DEMO ESTETIKA AI asistentė 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
