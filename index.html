@@ -219,24 +219,26 @@
     .cal-times { margin-top: 12px; border-top: 1px solid #f0ebe4; padding-top: 10px; }
     .cal-time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .confirm-card {
-      background: #fdf6f0; border: 1.5px solid rgba(201,169,110,0.35);
-      border-radius: 20px; border-bottom-left-radius: 20px;
-      box-shadow: 0 6px 24px rgba(201,169,110,0.18); text-align: center;
-      width: auto; max-width: 230px; padding: 18px 20px;
+      background: white; border: none;
+      border-radius: 16px; border-bottom-left-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      width: auto; max-width: 200px; padding: 16px 18px;
+      text-align: left;
     }
     .confirm-card .confirm-icon {
-      width: 52px; height: 52px; border-radius: 50%;
-      background: #e8f5e9; display: flex; align-items: center; justify-content: center;
-      font-size: 24px; margin: 0 auto 10px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #c9a96e; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; margin-bottom: 10px; color: white;
     }
-    .confirm-card strong { color: #2c2c2c; font-size: 15px; display: block; margin-bottom: 2px; }
+    .confirm-card strong { color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px; font-weight: 600; }
+    .confirm-card p { font-size: 12px !important; color: #888; margin-bottom: 4px !important; line-height: 1.5; }
+    .confirm-card p strong { color: #555; font-size: 12px; display: inline; }
     .confirm-card .edit-btn {
-      margin-top: 12px; padding: 8px 20px; background: transparent;
-      border: 1.5px solid #c9a96e; border-radius: 20px; color: #c9a96e;
-      font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s;
+      margin-top: 10px; padding: 0; background: transparent; border: none;
+      color: #c9a96e; font-size: 11px; cursor: pointer; font-family: inherit;
+      text-decoration: underline; text-underline-offset: 2px;
     }
-    .confirm-card .edit-btn:hover { background: rgba(201,169,110,0.1); }
-    .confirm-card .edit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .confirm-card .edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: 0.2s; }
@@ -602,7 +604,7 @@
         bookingUid = data.data?.uid || data.uid || data.bookingId || data.id || null;
         document.getElementById('chat-panel').classList.remove('expanded');
         appendCard(`<div class="confirm-card">
-          <div class="confirm-icon">✅</div>
+          <div class="confirm-icon">✓</div>
           <strong>Vizitas užregistruotas!</strong>
           <p style="margin-top:6px">${label}</p>
           <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
