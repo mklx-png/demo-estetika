@@ -171,13 +171,13 @@
     .msg.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .msg.ai a { color: #c9a96e; font-weight: 600; }
     .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .book-card, .contact-card, .slots-card, .confirm-card {
+    .book-card, .contact-card, .slots-card, .confirm-card, .pre-confirm-card {
       align-self: flex-start; background: white;
       border: 1.5px solid #c9a96e; border-radius: 14px; border-bottom-left-radius: 4px;
       padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07); width: 100%;
       animation: msgIn 0.25s ease both;
     }
-    .book-card p, .contact-card p, .slots-card p, .confirm-card p {
+    .book-card p, .contact-card p, .slots-card p, .confirm-card p, .pre-confirm-card p {
       font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
     }
     .book-card button {
@@ -207,9 +207,24 @@
       cursor: pointer; transition: all 0.15s; text-align: center;
     }
     .slot-btn:hover { background: #c9a96e; color: white; }
-    .confirm-card { border-color: #4caf50; }
-    .confirm-card .confirm-icon { font-size: 28px; margin-bottom: 6px; }
-    .confirm-card strong { color: #333; font-size: 14px; }
+    .confirm-card {
+      background: #fdf6f0; border: 1.5px solid rgba(201,169,110,0.35);
+      border-radius: 20px; border-bottom-left-radius: 20px;
+      box-shadow: 0 6px 24px rgba(201,169,110,0.18); text-align: center;
+    }
+    .confirm-card .confirm-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #e8f5e9; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 auto 10px;
+    }
+    .confirm-card strong { color: #2c2c2c; font-size: 15px; display: block; margin-bottom: 2px; }
+    .confirm-card .edit-btn {
+      margin-top: 12px; padding: 8px 20px; background: transparent;
+      border: 1.5px solid #c9a96e; border-radius: 20px; color: #c9a96e;
+      font-size: 12px; cursor: pointer; font-family: inherit; transition: background 0.15s;
+    }
+    .confirm-card .edit-btn:hover { background: rgba(201,169,110,0.1); }
+    .confirm-card .edit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
     .typing span:nth-child(2) { animation-delay: 0.2s; }
@@ -375,10 +390,10 @@
       'book','booking','appointment'];
     const LT_DAYS = ['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis',
       'Ketvirtadienis','Penktadienis','Šeštadienis'];
-    const LT_MONTHS = ['Sau','Vas','Kov','Bal','Geg','Bir','Lie','Rgp','Rgs','Spa','Lap','Grd'];
+    const LT_MONTHS = ['Sausis','Vasaris','Kovas','Balandis','Gegužė','Birželis','Liepa','Rugpjūtis','Rugsėjis','Spalis','Lapkritis','Gruodis'];
 
     let chatOpened = false, bookingShown = false;
-    let bookName = '', bookEmail = '', bookEventTypeId = null;
+    let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null;
 
     function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
     function msgs() { return document.getElementById('chat-messages'); }
@@ -409,10 +424,7 @@
       if (bookingShown) return; bookingShown = true;
       appendCard(`<div class="book-card">
         <p>Pasirinkite jums patogų laiką — užsiregistravimas užtruks mažiau nei minutę.</p>
-        <button onclick="startBooking()">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-          📅 Rezervuoti vizitą
-        </button></div>`);
+        <button onclick="startBooking()">📅 Rezervuoti vizitą</button></div>`);
     }
 
     function startBooking() {
@@ -472,7 +484,7 @@
         for (const slot of filtered) {
           const t = new Date(slot.time);
           const hhmm = t.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Vilnius' });
-          html += `<button class="slot-btn" onclick="bookSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
+          html += `<button class="slot-btn" onclick="preConfirmSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
         }
         html += '</div></div>';
       }
@@ -483,6 +495,7 @@
     }
 
     async function bookSlot(start, label) {
+      document.querySelector('.pre-confirm-card')?.remove();
       addMessage('user', '🕐 ' + label);
       showTyping();
       try {
@@ -491,16 +504,62 @@
         const data = await res.json();
         hideTyping();
         if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
+        bookingUid = data.uid || data.bookingId || data.id || null;
         document.getElementById('chat-panel').classList.remove('expanded');
         appendCard(`<div class="confirm-card">
           <div class="confirm-icon">✅</div>
           <strong>Vizitas užregistruotas!</strong>
           <p style="margin-top:6px">${label}</p>
           <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
+          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizitą</button>
         </div>`);
       } catch(err) {
         hideTyping();
         addMessage('ai', 'Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
+      }
+    }
+
+    function preConfirmSlot(start, label) {
+      document.querySelectorAll('.slot-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.45'; });
+      appendCard(`<div class="pre-confirm-card">
+        <p>Pasirinktas laikas:</p>
+        <div style="font-weight:600;font-size:14px;color:#2c2c2c;margin-bottom:14px">🕐 ${label}</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="bookSlot('${start.replace(/'/g,"\\'")}','${label.replace(/'/g,"\\'")}');this.closest('.pre-confirm-card').querySelectorAll('button').forEach(b=>b.disabled=true)" style="flex:1;padding:10px;background:#c9a96e;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Patvirtinti ✓</button>
+          <button onclick="cancelPreConfirm()" style="flex:1;padding:10px;background:#f0ebe4;color:#555;border:none;border-radius:10px;font-size:14px;cursor:pointer">Atšaukti</button>
+        </div>
+      </div>`);
+    }
+
+    function cancelPreConfirm() {
+      document.querySelector('.pre-confirm-card')?.remove();
+      document.querySelectorAll('.slot-btn').forEach(b => { b.disabled = false; b.style.opacity = '1'; });
+    }
+
+    async function editBooking() {
+      const btn = document.querySelector('.confirm-card .edit-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Atšaukiama...'; }
+      try {
+        if (bookingUid) {
+          const res = await fetch(API + '?action=cancel&bookingUid=' + encodeURIComponent(bookingUid));
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+        }
+        bookingUid = null;
+        document.querySelector('.confirm-card')?.remove();
+        document.getElementById('chat-panel').classList.add('expanded');
+        addMessage('ai', 'Vizitas atšauktas. Pasirinkite naują laiką:');
+        showTyping();
+        const r2 = await fetch(API + '?action=slots');
+        const d2 = await r2.json();
+        hideTyping();
+        if (d2.error) throw new Error(d2.error);
+        bookEventTypeId = d2.eventTypeId;
+        showSlots(d2.slots);
+      } catch(err) {
+        hideTyping();
+        if (btn) { btn.disabled = false; btn.textContent = '✏️ Keisti vizitą'; }
+        addMessage('ai', 'Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
       }
     }
 
