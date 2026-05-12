@@ -130,14 +130,20 @@
     #chat-panel {
       position: fixed; bottom: 100px; right: 24px;
       width: 380px; max-width: calc(100vw - 32px);
-      height: 580px; max-height: calc(100vh - 140px);
+      height: 580px; max-height: calc(100vh - 120px);
       background: white; border-radius: 16px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.18);
       display: none; flex-direction: column;
       z-index: 9999; overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: height 0.35s ease, width 0.35s ease, bottom 0.35s ease;
     }
     #chat-panel.open { display: flex; }
+    #chat-panel.expanded {
+      height: calc(100vh - 40px);
+      bottom: 20px;
+      width: 420px;
+    }
     #chat-header {
       background: #2c2c2c; color: white; padding: 16px 20px;
       display: flex; align-items: center; justify-content: space-between;
@@ -451,6 +457,7 @@
       if (!hasAny) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       html += '</div>';
       appendCard(html);
+      document.getElementById('chat-panel').classList.add('expanded');
     }
 
     async function bookSlot(start, label) {
@@ -462,6 +469,7 @@
         const data = await res.json();
         hideTyping();
         if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
+        document.getElementById('chat-panel').classList.remove('expanded');
         appendCard(`<div class="confirm-card">
           <div class="confirm-icon">✅</div>
           <strong>Vizitas užregistruotas!</strong>
