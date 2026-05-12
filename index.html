@@ -96,18 +96,14 @@
     .msg.ai a { color: #c9a96e; font-weight: 600; }
     .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
 
-    /* Booking button inside chat */
-    .book-card {
-      align-self: flex-start;
-      background: white;
-      border: 1.5px solid #c9a96e;
-      border-radius: 14px;
-      border-bottom-left-radius: 4px;
-      padding: 14px 16px;
-      max-width: 82%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    /* Booking cards */
+    .book-card, .contact-card, .slots-card, .confirm-card {
+      align-self: flex-start; background: white;
+      border: 1.5px solid #c9a96e; border-radius: 14px; border-bottom-left-radius: 4px;
+      padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      width: 100%;
     }
-    .book-card p {
+    .book-card p, .contact-card p, .slots-card p, .confirm-card p {
       font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
     }
     .book-card button {
@@ -118,6 +114,31 @@
     }
     .book-card button:hover { background: #b8925a; }
     .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
+    /* Contact form */
+    .contact-card input {
+      width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 13px; margin-bottom: 8px; font-family: inherit; outline: none;
+    }
+    .contact-card input:focus { border-color: #c9a96e; }
+    .contact-card button {
+      width: 100%; padding: 10px; background: #c9a96e; color: white;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    .contact-card button:hover { background: #b8925a; }
+    /* Slots */
+    .slots-day { margin-bottom: 10px; }
+    .slots-day-label { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .slot-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    .slot-btn {
+      padding: 7px 12px; background: #fdf6f0; border: 1.5px solid #c9a96e;
+      border-radius: 8px; font-size: 13px; font-weight: 600; color: #c9a96e;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .slot-btn:hover { background: #c9a96e; color: white; }
+    /* Confirm */
+    .confirm-card { border-color: #4caf50; }
+    .confirm-card .confirm-icon { font-size: 28px; margin-bottom: 6px; }
+    .confirm-card strong { color: #333; font-size: 14px; }
 
     .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
@@ -203,54 +224,131 @@
       document.getElementById('successDiv').style.display = 'block';
     });
 
-    // ===== CHAT CONFIG =====
-    // !!! REPLACE with your new Make.com chat webhook URL !!!
-    const CHAT_WEBHOOK_URL = 'https://project-zk9l5.vercel.app/api/chat';
+    const API = 'https://project-zk9l5.vercel.app/api/chat';
+    const BOOKING_KEYWORDS = ['užsiregistruoti','registruotis','registracija','rezervuoti',
+      'rezervacija','užsisakyti','kada galima','laisvas laikas','vizitas','apsilankyti',
+      'book','booking','appointment'];
+    const LT_DAYS = ['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis',
+      'Ketvirtadienis','Penktadienis','Šeštadienis'];
+    const LT_MONTHS = ['Sau','Vas','Kov','Bal','Geg','Bir','Lie','Rgp','Rgs','Spa','Lap','Grd'];
 
-    // Cal.com booking link — change per clinic
-    const CAL_LINK = 'mykolas-cizas-odnpe8/konsultacija';
+    let chatOpened = false, bookingShown = false;
+    let bookName = '', bookEmail = '', bookEventTypeId = null;
 
-    // Lithuanian + English booking intent keywords
-    const BOOKING_KEYWORDS = [
-      'užsiregistruoti','registruotis','registracija','rezervuoti','rezervacija',
-      'užsisakyti','noriu ateiti','kada galima','kada galiu','laisvas laikas',
-      'laisvi laikai','vizitas','apsilankyti','atvykti','susitikimas',
-      'užrašyti','užrašykite','book','booking','appointment','schedule'
-    ];
+    function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
 
-    const history = [];
-    let chatOpened = false;
-    let bookingShown = false; // show booking button only once per session
+    function msgs() { return document.getElementById('chat-messages'); }
 
-    // ===== BOOKING INTENT DETECTION =====
-    function hasBookingIntent(text) {
-      const lower = text.toLowerCase();
-      return BOOKING_KEYWORDS.some(kw => lower.includes(kw));
+    function scrollBottom() { msgs().scrollTop = msgs().scrollHeight; }
+
+    function addMessage(role, text) {
+      const d = document.createElement('div');
+      d.className = 'msg ' + role;
+      d.innerHTML = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'')
+        .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>').trim();
+      msgs().appendChild(d); scrollBottom();
     }
 
-    // ===== BOOKING BUTTON =====
+    function appendCard(html) {
+      const d = document.createElement('div'); d.innerHTML = html;
+      msgs().appendChild(d.firstElementChild); scrollBottom();
+    }
+
+    function showTyping() {
+      const d = document.createElement('div');
+      d.className = 'typing'; d.id = 'typing-indicator';
+      d.innerHTML = '<span></span><span></span><span></span>';
+      msgs().appendChild(d); scrollBottom();
+    }
+    function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+    // ── BOOKING BUTTON ──
     function showBookingButton() {
-      if (bookingShown) return;
-      bookingShown = true;
-      const messages = document.getElementById('chat-messages');
-      const card = document.createElement('div');
-      card.className = 'book-card';
-      card.innerHTML = `
+      if (bookingShown) return; bookingShown = true;
+      appendCard(`<div class="book-card">
         <p>Pasirinkite jums patogų laiką — užsiregistravimas užtruks mažiau nei minutę.</p>
-        <button onclick="openCal()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        <button onclick="startBooking()">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
           📅 Rezervuoti vizitą
-        </button>
-      `;
-      messages.appendChild(card);
-      messages.scrollTop = messages.scrollHeight;
+        </button></div>`);
     }
 
-    function openCal() {
-      window.open('https://cal.com/' + CAL_LINK, '_blank');
+    // ── STEP 1: collect name + email ──
+    function startBooking() {
+      appendCard(`<div class="contact-card">
+        <p>Įveskite savo kontaktus:</p>
+        <input type="text" id="book-name" placeholder="Vardas Pavardė">
+        <input type="email" id="book-email" placeholder="el.pastas@gmail.com">
+        <button onclick="submitContact()">Toliau →</button>
+      </div>`);
     }
 
-    // ===== CHAT CORE =====
+    // ── STEP 2: fetch slots ──
+    async function submitContact() {
+      const n = document.getElementById('book-name')?.value.trim();
+      const e = document.getElementById('book-email')?.value.trim();
+      if (!n || !e) { alert('Įveskite vardą ir el. paštą'); return; }
+      bookName = n; bookEmail = e;
+      addMessage('user', n + ' · ' + e);
+      showTyping();
+      try {
+        const res = await fetch(API + '?action=slots');
+        const data = await res.json();
+        hideTyping();
+        if (data.error) throw new Error(data.error);
+        bookEventTypeId = data.eventTypeId;
+        showSlots(data.slots);
+      } catch(err) {
+        hideTyping();
+        addMessage('ai', 'Nepavyko gauti laisvų laikų. Bandykite vėliau.');
+      }
+    }
+
+    // ── STEP 3: display slots ──
+    function showSlots(slots) {
+      const days = Object.keys(slots).slice(0, 7);
+      if (!days.length) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
+      let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
+      for (const day of days) {
+        const times = slots[day].slice(0, 6);
+        if (!times.length) continue;
+        const d = new Date(day);
+        const label = LT_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + LT_MONTHS[d.getMonth()];
+        html += `<div class="slots-day"><div class="slots-day-label">${label}</div><div class="slot-btns">`;
+        for (const slot of times) {
+          const t = new Date(slot.time);
+          const hhmm = t.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Vilnius' });
+          html += `<button class="slot-btn" onclick="bookSlot('${slot.time}','${label} ${hhmm}')">${hhmm}</button>`;
+        }
+        html += '</div></div>';
+      }
+      html += '</div>';
+      appendCard(html);
+    }
+
+    // ── STEP 4: create booking ──
+    async function bookSlot(start, label) {
+      addMessage('user', '🕐 ' + label);
+      showTyping();
+      try {
+        const params = new URLSearchParams({ action:'book', start, name:bookName, email:bookEmail, eventTypeId:bookEventTypeId });
+        const res = await fetch(API + '?' + params);
+        const data = await res.json();
+        hideTyping();
+        if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
+        appendCard(`<div class="confirm-card">
+          <div class="confirm-icon">✅</div>
+          <strong>Vizitas užregistruotas!</strong>
+          <p style="margin-top:6px">${label}</p>
+          <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
+        </div>`);
+      } catch(err) {
+        hideTyping();
+        addMessage('ai', 'Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
+      }
+    }
+
+    // ── CHAT ──
     function toggleChat() {
       const panel = document.getElementById('chat-panel');
       panel.classList.toggle('open');
@@ -263,72 +361,30 @@
       }
     }
 
-    function addMessage(role, text) {
-      const messages = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.className = 'msg ' + role;
-      // turn plain URLs into links, strip cal.com links (button handles that)
-      div.innerHTML = text
-        .replace(/https?:\/\/cal\.com\/[^\s]*/g, '')
-        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
-        .trim();
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function showTyping() {
-      const messages = document.getElementById('chat-messages');
-      const div = document.createElement('div');
-      div.className = 'typing';
-      div.id = 'typing-indicator';
-      div.innerHTML = '<span></span><span></span><span></span>';
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function hideTyping() {
-      const t = document.getElementById('typing-indicator');
-      if (t) t.remove();
-    }
-
     async function sendMessage() {
       const input = document.getElementById('chat-input');
-      const sendBtn = document.getElementById('chat-send');
+      const btn = document.getElementById('chat-send');
       const text = input.value.trim();
       if (!text) return;
-
-      const userWantsBooking = hasBookingIntent(text);
-
+      const wantsBooking = hasBookingIntent(text);
       addMessage('user', text);
-      history.push({ role: 'user', content: text });
-      input.value = '';
-      input.disabled = true;
-      sendBtn.disabled = true;
+      input.value = ''; input.disabled = true; btn.disabled = true;
       showTyping();
-
       try {
-        const res = await fetch(CHAT_WEBHOOK_URL + '?message=' + encodeURIComponent(text));
+        const res = await fetch(API + '?message=' + encodeURIComponent(text));
         const data = await res.json();
-        const reply = data.reply || 'Atsiprašau, įvyko klaida. Pabandykite vėliau.';
+        const reply = data.reply || 'Atsiprašau, įvyko klaida.';
         hideTyping();
         addMessage('ai', reply);
-        history.push({ role: 'assistant', content: reply });
-
-        // Show booking button if user asked to book OR AI mentioned booking
-        if (userWantsBooking || hasBookingIntent(reply)) {
-          setTimeout(showBookingButton, 400);
-        }
-      } catch (err) {
+        if (wantsBooking || hasBookingIntent(reply)) setTimeout(showBookingButton, 400);
+      } catch {
         hideTyping();
         addMessage('ai', 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
       }
-
-      input.disabled = false;
-      sendBtn.disabled = false;
-      input.focus();
+      input.disabled = false; btn.disabled = false; input.focus();
     }
 
-    document.getElementById('chat-input').addEventListener('keypress', function(e) {
+    document.getElementById('chat-input').addEventListener('keypress', e => {
       if (e.key === 'Enter') sendMessage();
     });
   </script>
