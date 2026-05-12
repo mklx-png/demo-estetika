@@ -420,14 +420,18 @@
         <p>Įveskite savo kontaktus:</p>
         <input type="text" id="book-name" placeholder="Vardas Pavardė">
         <input type="email" id="book-email" placeholder="el.pastas@gmail.com">
-        <button onclick="submitContact()">Toliau →</button>
+        <button id="contact-submit-btn" onclick="submitContact()">Toliau →</button>
       </div>`);
     }
 
     async function submitContact() {
       const n = document.getElementById('book-name')?.value.trim();
       const e = document.getElementById('book-email')?.value.trim();
+      const btn = document.getElementById('contact-submit-btn');
       if (!n || !e) { alert('Įveskite vardą ir el. paštą'); return; }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(e)) { alert('Įveskite teisingą el. pašto adresą (pvz. vardas@gmail.com)'); return; }
+      if (btn) { btn.disabled = true; btn.textContent = 'Kraunama...'; }
       bookName = n; bookEmail = e;
       addMessage('user', n + ' · ' + e);
       showTyping();
