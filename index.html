@@ -30,17 +30,22 @@
       cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
       z-index: 9998; transition: transform 0.2s;
       font-family: -apple-system, sans-serif;
+      animation: bubbleIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) 0.4s both;
+    }
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: scale(0.4); }
+      to   { opacity: 1; transform: scale(1); }
     }
     #chat-bubble:hover { transform: scale(1.08); background: #b8925a; }
     #chat-bubble svg { width: 28px; height: 28px; }
     #chat-tooltip {
       position: fixed; bottom: 102px; right: 24px;
       background: white; color: #444; font-size: 13px;
-      line-height: 1.55; padding: 14px 18px; border-radius: 14px;
+      line-height: 1.55; padding: 12px 18px; border-radius: 14px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-      width: 196px; text-align: center;
+      white-space: nowrap; text-align: center;
       z-index: 9997; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      animation: fadeInUp 0.5s ease 1s both;
+      animation: fadeInUp 0.5s ease 1.2s both;
     }
     #chat-tooltip::after {
       content: ''; position: absolute; bottom: -8px; right: 30px;
