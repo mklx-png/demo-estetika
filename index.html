@@ -309,19 +309,26 @@
       const days = Object.keys(slots).slice(0, 7);
       if (!days.length) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
+      let hasAny = false;
       for (const day of days) {
-        const times = slots[day].slice(0, 6);
-        if (!times.length) continue;
-        const d = new Date(day);
-        const label = LT_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + LT_MONTHS[d.getMonth()];
+        // filter to :00 and :30 only, max 6 per day
+        const filtered = slots[day].filter(s => {
+          const m = new Date(s.time).getMinutes();
+          return m === 0 || m === 30;
+        }).slice(0, 6);
+        if (!filtered.length) continue;
+        hasAny = true;
+        const d = new Date(day + 'T12:00:00Z');
+        const label = LT_DAYS[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + LT_MONTHS[d.getUTCMonth()];
         html += `<div class="slots-day"><div class="slots-day-label">${label}</div><div class="slot-btns">`;
-        for (const slot of times) {
+        for (const slot of filtered) {
           const t = new Date(slot.time);
           const hhmm = t.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Vilnius' });
-          html += `<button class="slot-btn" onclick="bookSlot('${slot.time}','${label} ${hhmm}')">${hhmm}</button>`;
+          html += `<button class="slot-btn" onclick="bookSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
         }
         html += '</div></div>';
       }
+      if (!hasAny) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       html += '</div>';
       appendCard(html);
     }
