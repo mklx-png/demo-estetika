@@ -128,11 +128,11 @@
     /* Slots */
     .slots-day { margin-bottom: 10px; }
     .slots-day-label { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .slot-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    .slot-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .slot-btn {
-      padding: 7px 12px; background: #fdf6f0; border: 1.5px solid #c9a96e;
+      padding: 8px 4px; background: #fdf6f0; border: 1.5px solid #c9a96e;
       border-radius: 8px; font-size: 13px; font-weight: 600; color: #c9a96e;
-      cursor: pointer; transition: all 0.15s;
+      cursor: pointer; transition: all 0.15s; text-align: center;
     }
     .slot-btn:hover { background: #c9a96e; color: white; }
     /* Confirm */
@@ -306,16 +306,16 @@
 
     // ── STEP 3: display slots ──
     function showSlots(slots) {
-      const days = Object.keys(slots).slice(0, 7);
+      const days = Object.keys(slots).slice(0, 5);
       if (!days.length) { addMessage('ai', 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
       let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
       let hasAny = false;
       for (const day of days) {
-        // filter to :00 and :30 only, max 6 per day
+        // filter to :00 and :30 only, max 4 per day
         const filtered = slots[day].filter(s => {
           const m = new Date(s.time).getMinutes();
           return m === 0 || m === 30;
-        }).slice(0, 6);
+        }).slice(0, 4);
         if (!filtered.length) continue;
         hasAny = true;
         const d = new Date(day + 'T12:00:00Z');
