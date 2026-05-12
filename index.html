@@ -199,15 +199,25 @@
       border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
     }
     .contact-card button:hover { background: #b8925a; }
-    .slots-day { margin-bottom: 10px; }
-    .slots-day-label { font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-    .slot-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .slot-btn {
       padding: 8px 4px; background: #fdf6f0; border: 1.5px solid #c9a96e;
       border-radius: 8px; font-size: 13px; font-weight: 600; color: #c9a96e;
       cursor: pointer; transition: all 0.15s; text-align: center;
     }
     .slot-btn:hover { background: #c9a96e; color: white; }
+    .slot-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    /* Calendar */
+    .cal-header { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; color: #2c2c2c; text-align: center; margin-bottom: 10px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-dow { text-align: center; font-size: 10px; font-weight: 600; color: #bbb; text-transform: uppercase; padding: 3px 0 5px; }
+    .cal-day { text-align: center; font-size: 13px; padding: 6px 2px; border-radius: 7px; line-height: 1; }
+    .cal-available { background: #fdf6f0; border: 1.5px solid #c9a96e; color: #c9a96e; cursor: pointer; font-weight: 600; transition: all 0.15s; }
+    .cal-available:hover { background: #c9a96e; color: white; }
+    .cal-selected { background: #c9a96e !important; color: white !important; }
+    .cal-unavailable, .cal-past { color: #ddd; }
+    .cal-empty {}
+    .cal-times { margin-top: 12px; border-top: 1px solid #f0ebe4; padding-top: 10px; }
+    .cal-time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .confirm-card {
       background: #fdf6f0; border: 1.5px solid rgba(201,169,110,0.35);
       border-radius: 20px; border-bottom-left-radius: 20px;
@@ -488,32 +498,59 @@
       }
     }
 
+    let allSlots = {};
+
     function showSlots(slots) {
-      const days = Object.keys(slots).slice(0, 5);
-      if (!days.length) { typeMessage( 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
-      let html = '<div class="slots-card"><p>Pasirinkite vizito laiką:</p>';
-      let hasAny = false;
-      for (const day of days) {
-        const filtered = slots[day].filter(s => {
-          const m = new Date(s.time).getMinutes();
-          return m === 0 || m === 30;
-        });
-        if (!filtered.length) continue;
-        hasAny = true;
-        const d = new Date(day + 'T12:00:00Z');
-        const label = LT_DAYS[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + LT_MONTHS[d.getUTCMonth()];
-        html += `<div class="slots-day"><div class="slots-day-label">${label}</div><div class="slot-btns">`;
-        for (const slot of filtered) {
-          const t = new Date(slot.time);
-          const hhmm = t.toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Vilnius' });
-          html += `<button class="slot-btn" onclick="preConfirmSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
-        }
-        html += '</div></div>';
+      allSlots = slots;
+      const availableDays = new Set(
+        Object.keys(slots).filter(d => slots[d].some(s => { const m = new Date(s.time).getMinutes(); return m === 0 || m === 30; }))
+      );
+      if (!availableDays.size) { typeMessage('Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
+
+      const firstAvail = new Date([...availableDays].sort()[0] + 'T12:00:00Z');
+      const year = firstAvail.getUTCFullYear();
+      const month = firstAvail.getUTCMonth();
+      const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+      const firstDow = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7;
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
+
+      let html = `<div class="slots-card">
+        <p style="margin-bottom:10px">Pasirinkite dieną:</p>
+        <div class="cal-header">${LT_MONTHS[month]} ${year}</div>
+        <div class="cal-grid">`;
+      for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
+      for (let i = 0; i < firstDow; i++) html += `<div class="cal-day cal-empty"></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (ds < todayStr || !availableDays.has(ds))
+          html += `<div class="cal-day ${ds < todayStr ? 'cal-past' : 'cal-unavailable'}">${d}</div>`;
+        else
+          html += `<div class="cal-day cal-available" onclick="selectDay('${ds}',this)">${d}</div>`;
       }
-      if (!hasAny) { typeMessage( 'Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
-      html += '</div>';
+      html += `</div><div class="cal-times" id="cal-times"></div></div>`;
       appendCard(html);
       document.getElementById('chat-panel').classList.add('expanded');
+    }
+
+    function selectDay(dateStr, el) {
+      document.querySelectorAll('.cal-available').forEach(d => d.classList.remove('cal-selected'));
+      el.classList.add('cal-selected');
+      const timesEl = document.getElementById('cal-times');
+      if (!timesEl) return;
+      const daySlots = (allSlots[dateStr] || []).filter(s => { const m = new Date(s.time).getMinutes(); return m === 0 || m === 30; });
+      if (!daySlots.length) { timesEl.innerHTML = '<p style="font-size:12px;color:#999">Šią dieną laikų nėra.</p>'; return; }
+      const d = new Date(dateStr + 'T12:00:00Z');
+      const label = LT_DAYS[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + LT_MONTHS[d.getUTCMonth()];
+      let html = '<p style="font-size:12px;font-weight:600;color:#999;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">' + label + '</p><div class="cal-time-grid">';
+      for (const slot of daySlots) {
+        const t = new Date(slot.time);
+        const hhmm = t.toLocaleTimeString('lt-LT', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Vilnius' });
+        html += `<button class="slot-btn" onclick="preConfirmSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
+      }
+      html += '</div>';
+      timesEl.innerHTML = html;
+      scrollBottom();
     }
 
     async function bookSlot(start, label) {
