@@ -504,7 +504,7 @@
         const data = await res.json();
         hideTyping();
         if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
-        bookingUid = data.uid || data.bookingId || data.id || null;
+        bookingUid = data.data?.uid || data.uid || data.bookingId || data.id || null;
         document.getElementById('chat-panel').classList.remove('expanded');
         appendCard(`<div class="confirm-card">
           <div class="confirm-icon">✅</div>
