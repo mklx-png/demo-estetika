@@ -159,6 +159,7 @@
     #chat-header .clinic-name { font-weight: 600; font-size: 15px; letter-spacing: 1px; }
     #chat-header .clinic-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
     #chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 0; width: auto; }
+    #chat-restart:hover { color: #c9a96e !important; }
     #chat-messages {
       flex: 1; overflow-y: auto; padding: 16px;
       background: #faf7f3; display: flex; flex-direction: column; gap: 10px;
@@ -374,7 +375,12 @@
         <div class="clinic-name">DEMO ESTETIKA</div>
         <div class="clinic-sub">Asistentė</div>
       </div>
-      <button id="chat-close" onclick="toggleChat()">×</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="chat-restart" onclick="restartChat()" title="Pradėti iš naujo" style="background:none;border:none;color:#aaa;cursor:pointer;padding:4px;display:flex;align-items:center;transition:color 0.2s">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+        </button>
+        <button id="chat-close" onclick="toggleChat()">×</button>
+      </div>
     </div>
     <div id="chat-messages"></div>
     <div id="chat-input-wrap">
@@ -591,6 +597,16 @@
         typeMessage( 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
         setTimeout(showBookingButton, 300);
       }
+    }
+
+    function restartChat() {
+      document.getElementById('chat-messages').innerHTML = '';
+      document.getElementById('chat-panel').classList.remove('expanded');
+      chatOpened = true;
+      bookingShown = false;
+      bookName = ''; bookEmail = ''; bookEventTypeId = null; bookingUid = null;
+      typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
+      setTimeout(showBookingButton, 300);
     }
 
     async function sendMessage() {
