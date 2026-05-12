@@ -66,6 +66,7 @@
     .cw-contact-input{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;
       font-size:16px;margin-bottom:8px;font-family:inherit;outline:none;box-sizing:border-box}
     .cw-contact-input:focus{border-color:${COLOR}}
+    .cw-contact-input::placeholder{font-size:13px;color:#aaa}
     .cw-submit-btn{width:100%;padding:10px;background:${COLOR};color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
     .cw-submit-btn:hover{filter:brightness(0.88)}
     .cw-submit-btn:disabled{background:#ccc;cursor:not-allowed}
