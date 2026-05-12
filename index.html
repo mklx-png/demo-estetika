@@ -512,7 +512,7 @@
           <strong>Vizitas užregistruotas!</strong>
           <p style="margin-top:6px">${label}</p>
           <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
-          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizitą</button>
+          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
         </div>`);
       } catch(err) {
         hideTyping();
@@ -559,7 +559,7 @@
         showSlots(d2.slots);
       } catch(err) {
         hideTyping();
-        if (btn) { btn.disabled = false; btn.textContent = '✏️ Keisti vizitą'; }
+        if (btn) { btn.disabled = false; btn.textContent = '✏️ Keisti vizito laiką'; }
         addMessage('ai', 'Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
       }
     }
