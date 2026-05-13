@@ -441,7 +441,6 @@
   </footer>
 
   <!-- ========== CHAT WIDGET ========== -->
-  <div id="chat-tooltip">Pasiteirauk ir užsiregistruok 😊</div>
   <div id="chat-bubble" onclick="toggleChat()">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
     <div class="pulse" id="chat-badge">1</div>
@@ -815,7 +814,6 @@
       const panel = document.getElementById('chat-panel');
       panel.classList.toggle('open');
       document.getElementById('chat-badge').style.display = 'none';
-      document.getElementById('chat-tooltip').style.display = 'none';
       setBodyLock(panel.classList.contains('open'));
       if (!chatOpened && panel.classList.contains('open')) {
         chatOpened = true;
