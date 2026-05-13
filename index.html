@@ -276,6 +276,13 @@
     .bk-confirm-row { background: white; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); margin-bottom: 12px; }
     .bk-confirm-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #bbb; margin-bottom: 6px; }
     .bk-confirm-val { font-size: 14px; font-weight: 600; color: #2c2c2c; }
+    .bk-service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bk-service-btn { background: white; border: 1.5px solid #e8e4df; border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; flex-direction: column; }
+    .bk-service-btn:hover { border-color: #c9a96e; background: #fdf6f0; }
+    .bk-service-btn.bk-selected { border-color: #c9a96e; background: #fdf6f0; box-shadow: 0 0 0 1px #c9a96e; }
+    .bk-service-icon { font-size: 18px; margin-bottom: 6px; }
+    .bk-service-name { font-size: 12.5px; font-weight: 600; color: #2c2c2c; }
+    .bk-service-price { font-size: 11px; color: #c9a96e; margin-top: 3px; }
 
     @media (max-width: 600px) {
       /* Chat full screen */
@@ -476,16 +483,24 @@
     const LT_DAYS = ['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis',
       'Ketvirtadienis','Penktadienis','Šeštadienis'];
     const LT_MONTHS = ['Sausis','Vasaris','Kovas','Balandis','Gegužė','Birželis','Liepa','Rugpjūtis','Rugsėjis','Spalis','Lapkritis','Gruodis'];
+    const SERVICES = [
+      { name:'Botox',            price:'nuo €120',      icon:'💉' },
+      { name:'Lip filleriai',    price:'nuo €250',      icon:'✨' },
+      { name:'Skruostų filleriai',price:'nuo €350',     icon:'✨' },
+      { name:'Lazerinė epiliacija',price:'nuo €60/seans.',icon:'🔆'},
+      { name:'Veido valymas',    price:'nuo €70',       icon:'🌿' },
+    ];
 
     let chatOpened = false, bookingShown = false;
     let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null;
     let wizStep = 0, selectedSlot = null, selectedDay = null, allSlots = {};
+    let selectedService = null, slotsForService = null;
 
     function setStep(n) {
       wizStep = n;
       const el = document.getElementById('chat-step');
       if (!el) return;
-      if (n > 0) { el.textContent = n + ' / 3'; el.style.display = 'block'; }
+      if (n > 0) { el.textContent = n + ' / 4'; el.style.display = 'block'; }
       else { el.textContent = ''; el.style.display = 'none'; }
     }
 
@@ -527,12 +542,30 @@
         document.getElementById('book-name-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') document.getElementById('book-email-wiz')?.focus(); });
         document.getElementById('book-email-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') bookingNext(); });
       } else if (n === 2) {
+        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedService;
+        content.innerHTML = `
+          <span class="bk-label">Pasirinkite paslaugą</span>
+          <div class="bk-service-grid">
+            ${SERVICES.map((s,i) => `
+              <button class="bk-service-btn${selectedService?.name===s.name?' bk-selected':''}" onclick="selectServiceWiz(${i},this)">
+                <span class="bk-service-icon">${s.icon}</span>
+                <span class="bk-service-name">${s.name}</span>
+                <span class="bk-service-price">${s.price}</span>
+              </button>`).join('')}
+          </div>
+        `;
+      } else if (n === 3) {
         nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedSlot;
         renderCalendarStep(content);
-      } else if (n === 3) {
+      } else if (n === 4) {
         nextBtn.textContent = 'Patvirtinti ✓'; nextBtn.disabled = false;
         content.innerHTML = `
           <span class="bk-label">Patvirtinkite vizitą</span>
+          <div class="bk-confirm-row">
+            <div class="bk-confirm-label">Paslauga</div>
+            <div class="bk-confirm-val">${selectedService?.icon} ${selectedService?.name}</div>
+            <div style="font-size:12px;color:#c9a96e;margin-top:2px">${selectedService?.price}</div>
+          </div>
           <div class="bk-confirm-row">
             <div class="bk-confirm-label">Kontaktai</div>
             <div class="bk-confirm-val">👤 ${bookName}</div>
@@ -545,6 +578,15 @@
           <p style="font-size:12px;color:#aaa;line-height:1.6;margin-top:4px">Patvirtinus, patvirtinimo laiškas bus išsiųstas nurodytu el. paštu.</p>
         `;
       }
+    }
+
+    function selectServiceWiz(idx, el) {
+      document.querySelectorAll('.bk-service-btn').forEach(b => b.classList.remove('bk-selected'));
+      el.classList.add('bk-selected');
+      const prev = selectedService?.name;
+      selectedService = SERVICES[idx];
+      if (prev !== selectedService.name) { selectedSlot = null; selectedDay = null; slotsForService = null; }
+      document.getElementById('booking-next').disabled = false;
     }
 
     function renderCalendarStep(content) {
@@ -562,7 +604,10 @@
       const todayStr = new Date().toISOString().slice(0,10);
       const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
       let html = `<span class="bk-label">Pasirinkite datą</span>
-        <div class="bk-summary"><div>👤 ${bookName}</div><div style="font-size:12px;color:#999">✉️ ${bookEmail}</div></div>
+        <div class="bk-summary">
+          <div>${selectedService?.icon} <strong>${selectedService?.name}</strong> <span style="color:#c9a96e;font-size:11px">${selectedService?.price}</span></div>
+          <div style="margin-top:6px;padding-top:6px;border-top:1px solid #f0ebe4">👤 ${bookName} &nbsp;·&nbsp; <span style="color:#999">✉️ ${bookEmail}</span></div>
+        </div>
         <div class="cal-header">${LT_MONTHS[month]} ${year}</div><div class="cal-grid">`;
       for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
       for (let i=0;i<firstDow;i++) html += `<div class="cal-day cal-empty"></div>`;
@@ -619,22 +664,26 @@
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert('Įveskite teisingą el. pašto adresą (pvz. vardas@gmail.com)');return;}
         const contactChanged=n!==bookName||e!==bookEmail;
         bookName=n; bookEmail=e;
-        if (contactChanged){selectedSlot=null;selectedDay=null;}
+        if (contactChanged){selectedSlot=null;selectedDay=null;slotsForService=null;}
+        renderStep(2);
+      } else if (wizStep===2) {
+        if (!selectedService) return;
+        if (slotsForService===selectedService.name && Object.keys(allSlots).length>0) { renderStep(3); return; }
         nextBtn.disabled=true; nextBtn.textContent='Kraunama...';
         try {
-          const res=await fetch(API+'?action=slots');
+          const res=await fetch(API+'?action=slots&service='+encodeURIComponent(selectedService.name));
           const data=await res.json();
           if (data.error) throw new Error(data.error);
-          bookEventTypeId=data.eventTypeId; allSlots=data.slots;
-          renderStep(2);
+          bookEventTypeId=data.eventTypeId; allSlots=data.slots; slotsForService=selectedService.name;
+          renderStep(3);
         } catch {
           nextBtn.disabled=false; nextBtn.textContent='Toliau →';
           alert('Nepavyko gauti laisvų laikų. Bandykite vėliau.');
         }
-      } else if (wizStep===2) {
-        if (!selectedSlot) return;
-        renderStep(3);
       } else if (wizStep===3) {
+        if (!selectedSlot) return;
+        renderStep(4);
+      } else if (wizStep===4) {
         await confirmBooking();
       }
     }
@@ -642,6 +691,7 @@
     function bookingBack() {
       if (wizStep===2) renderStep(1);
       else if (wizStep===3) renderStep(2);
+      else if (wizStep===4) renderStep(3);
     }
 
     async function confirmBooking() {
@@ -649,7 +699,7 @@
       const backBtn=document.getElementById('booking-back');
       nextBtn.disabled=true; nextBtn.textContent='Rezervuojama...'; backBtn.disabled=true;
       try {
-        const params=new URLSearchParams({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId});
+        const params=new URLSearchParams({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId,service:selectedService?.name||''});
         const res=await fetch(API+'?'+params);
         const data=await res.json();
         if (data.status==='error'||data.error) throw new Error(data.message||data.error);
@@ -658,7 +708,8 @@
         appendCard(`<div class="confirm-card">
           <div class="confirm-icon">✓</div>
           <strong>Vizitas užregistruotas!</strong>
-          <p style="margin-top:6px">${selectedSlot.label}</p>
+          <p style="margin-top:6px;color:#c9a96e;font-size:12px">${selectedService?.icon} ${selectedService?.name}</p>
+          <p style="margin-top:4px">${selectedSlot.label}</p>
           <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
           <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
         </div>`);
@@ -727,16 +778,7 @@
         bookingUid=null;
         document.querySelector('.confirm-card')?.remove();
         showWizard();
-        const content=document.getElementById('booking-step-content');
-        content.innerHTML='<div style="text-align:center;padding:40px 20px;color:#aaa;font-size:13px">Kraunama...</div>';
-        document.getElementById('booking-next').disabled=true;
-        document.getElementById('booking-back').style.visibility='visible';
-        setStep(2);
-        const r2=await fetch(API+'?action=slots');
-        const d2=await r2.json();
-        if (d2.error) throw new Error(d2.error);
-        bookEventTypeId=d2.eventTypeId; allSlots=d2.slots;
-        selectedSlot=null; selectedDay=null;
+        selectedSlot=null; selectedDay=null; slotsForService=null;
         renderStep(2);
       } catch {
         hideWizard();
@@ -785,6 +827,7 @@
       chatOpened=true; bookingShown=false;
       bookName=''; bookEmail=''; bookEventTypeId=null; bookingUid=null;
       selectedSlot=null; selectedDay=null; allSlots={};
+      selectedService=null; slotsForService=null;
       setStep(0);
       typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
       setTimeout(showBookingButton, 300);
