@@ -258,6 +258,25 @@
     #chat-send:disabled { background: #ccc; cursor: not-allowed; }
     #chat-footer { text-align: center; padding: 8px; font-size: 11px; color: #bbb; background: white; flex-shrink: 0; }
 
+    /* ── BOOKING WIZARD ── */
+    #booking-wizard { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
+    #booking-wizard.active { display: flex; }
+    #booking-step-content { flex: 1; overflow-y: auto; padding: 20px 16px 24px; background: #faf7f3; min-height: 0; }
+    .bk-label { font-size: 10.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c9a96e; margin-bottom: 18px; display: block; }
+    .bk-summary { background: white; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.9; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+    .bk-input { width: 100%; padding: 11px 14px; border: 1px solid #e8e4df; border-radius: 10px; font-size: 16px; margin-bottom: 12px; font-family: inherit; outline: none; background: white; transition: border-color 0.2s; display: block; box-sizing: border-box; }
+    .bk-input:focus { border-color: #c9a96e; }
+    .bk-input::placeholder { font-size: 13px; color: #bbb; }
+    #booking-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: white; border-top: 1px solid #eee; flex-shrink: 0; }
+    .bk-back { background: none; border: none; color: #999; font-size: 14px; cursor: pointer; font-family: inherit; padding: 8px 0; transition: color 0.2s; }
+    .bk-back:hover { color: #555; }
+    .bk-next { background: #c9a96e; color: white; border: none; border-radius: 20px; padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+    .bk-next:hover:not(:disabled) { background: #b8925a; }
+    .bk-next:disabled { background: #e0dbd4; color: #bbb; cursor: not-allowed; }
+    .bk-confirm-row { background: white; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); margin-bottom: 12px; }
+    .bk-confirm-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #bbb; margin-bottom: 6px; }
+    .bk-confirm-val { font-size: 14px; font-weight: 600; color: #2c2c2c; }
+
     @media (max-width: 600px) {
       /* Chat full screen */
       #chat-panel, #chat-panel.open, #chat-panel.expanded {
@@ -440,6 +459,13 @@
       <button id="chat-send" onclick="sendMessage()">Siųsti</button>
     </div>
     <div id="chat-footer"></div>
+    <div id="booking-wizard">
+      <div id="booking-step-content"></div>
+      <div id="booking-nav">
+        <button class="bk-back" id="booking-back" onclick="bookingBack()">← Atgal</button>
+        <button class="bk-next" id="booking-next" onclick="bookingNext()">Toliau →</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -453,8 +479,10 @@
 
     let chatOpened = false, bookingShown = false;
     let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null;
+    let wizStep = 0, selectedSlot = null, selectedDay = null, allSlots = {};
 
     function setStep(n) {
+      wizStep = n;
       const el = document.getElementById('chat-step');
       if (!el) return;
       if (n > 0) { el.textContent = n + ' / 3'; el.style.display = 'block'; }
@@ -464,6 +492,181 @@
     function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
     function msgs() { return document.getElementById('chat-messages'); }
     function scrollBottom() { msgs().scrollTop = msgs().scrollHeight; }
+
+    // ── WIZARD SHOW / HIDE ──────────────────────────────────────────────────
+    function showWizard() {
+      document.getElementById('chat-messages').style.display = 'none';
+      document.getElementById('chat-input-wrap').style.display = 'none';
+      document.getElementById('chat-footer').style.display = 'none';
+      document.getElementById('booking-wizard').classList.add('active');
+    }
+    function hideWizard() {
+      document.getElementById('chat-messages').style.display = '';
+      document.getElementById('chat-input-wrap').style.display = '';
+      document.getElementById('chat-footer').style.display = '';
+      document.getElementById('booking-wizard').classList.remove('active');
+      document.getElementById('chat-panel').classList.remove('expanded');
+    }
+
+    // ── WIZARD STEP RENDERING ───────────────────────────────────────────────
+    function renderStep(n) {
+      setStep(n);
+      const content = document.getElementById('booking-step-content');
+      const backBtn = document.getElementById('booking-back');
+      const nextBtn = document.getElementById('booking-next');
+      backBtn.style.visibility = n === 1 ? 'hidden' : 'visible';
+      backBtn.disabled = false;
+      if (n === 1) {
+        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = false;
+        content.innerHTML = `
+          <span class="bk-label">Jūsų kontaktai</span>
+          <input class="bk-input" type="text" id="book-name-wiz" placeholder="Vardas Pavardė" value="${bookName.replace(/"/g,'&quot;')}">
+          <input class="bk-input" type="email" id="book-email-wiz" placeholder="el.pastas@gmail.com" value="${bookEmail.replace(/"/g,'&quot;')}">
+        `;
+        setTimeout(() => document.getElementById('book-name-wiz')?.focus(), 80);
+        document.getElementById('book-name-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') document.getElementById('book-email-wiz')?.focus(); });
+        document.getElementById('book-email-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') bookingNext(); });
+      } else if (n === 2) {
+        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedSlot;
+        renderCalendarStep(content);
+      } else if (n === 3) {
+        nextBtn.textContent = 'Patvirtinti ✓'; nextBtn.disabled = false;
+        content.innerHTML = `
+          <span class="bk-label">Patvirtinkite vizitą</span>
+          <div class="bk-confirm-row">
+            <div class="bk-confirm-label">Kontaktai</div>
+            <div class="bk-confirm-val">👤 ${bookName}</div>
+            <div style="font-size:13px;color:#777;margin-top:3px">✉️ ${bookEmail}</div>
+          </div>
+          <div class="bk-confirm-row">
+            <div class="bk-confirm-label">Vizito laikas</div>
+            <div class="bk-confirm-val">📅 ${selectedSlot?.label || ''}</div>
+          </div>
+          <p style="font-size:12px;color:#aaa;line-height:1.6;margin-top:4px">Patvirtinus, patvirtinimo laiškas bus išsiųstas nurodytu el. paštu.</p>
+        `;
+      }
+    }
+
+    function renderCalendarStep(content) {
+      const availableDays = new Set(
+        Object.keys(allSlots).filter(d => allSlots[d].some(s => { const m=new Date(s.time).getMinutes(); return m===0||m===30; }))
+      );
+      if (!availableDays.size) {
+        content.innerHTML = '<span class="bk-label">Pasirinkite datą</span><p style="color:#999;font-size:13px">Šiuo metu laisvų laikų nėra.</p>';
+        return;
+      }
+      const firstAvail = new Date([...availableDays].sort()[0]+'T12:00:00Z');
+      const year = firstAvail.getUTCFullYear(), month = firstAvail.getUTCMonth();
+      const daysInMonth = new Date(Date.UTC(year,month+1,0)).getUTCDate();
+      const firstDow = (new Date(Date.UTC(year,month,1)).getUTCDay()+6)%7;
+      const todayStr = new Date().toISOString().slice(0,10);
+      const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
+      let html = `<span class="bk-label">Pasirinkite datą</span>
+        <div class="bk-summary"><div>👤 ${bookName}</div><div style="font-size:12px;color:#999">✉️ ${bookEmail}</div></div>
+        <div class="cal-header">${LT_MONTHS[month]} ${year}</div><div class="cal-grid">`;
+      for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
+      for (let i=0;i<firstDow;i++) html += `<div class="cal-day cal-empty"></div>`;
+      for (let d=1;d<=daysInMonth;d++) {
+        const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if (ds<todayStr||!availableDays.has(ds))
+          html+=`<div class="cal-day ${ds<todayStr?'cal-past':'cal-unavailable'}">${d}</div>`;
+        else
+          html+=`<div class="cal-day cal-available${selectedDay===ds?' cal-selected':''}" data-day="${ds}" onclick="selectDayWiz('${ds}',this)">${d}</div>`;
+      }
+      html+=`</div><div id="cal-times-wiz" class="cal-times"></div>`;
+      content.innerHTML=html;
+      if (selectedDay && availableDays.has(selectedDay)) renderTimesWiz(selectedDay);
+    }
+
+    function selectDayWiz(dateStr, el) {
+      document.querySelectorAll('.cal-available').forEach(d=>d.classList.remove('cal-selected'));
+      el.classList.add('cal-selected');
+      if (selectedDay !== dateStr) { selectedDay=dateStr; selectedSlot=null; document.getElementById('booking-next').disabled=true; }
+      renderTimesWiz(dateStr);
+    }
+
+    function renderTimesWiz(dateStr) {
+      const timesEl=document.getElementById('cal-times-wiz');
+      if (!timesEl) return;
+      const daySlots=(allSlots[dateStr]||[]).filter(s=>{const m=new Date(s.time).getMinutes();return m===0||m===30;});
+      if (!daySlots.length){timesEl.innerHTML='<p style="font-size:12px;color:#999">Šią dieną laikų nėra.</p>';return;}
+      const d=new Date(dateStr+'T12:00:00Z');
+      const label=LT_DAYS[d.getUTCDay()]+', '+d.getUTCDate()+' '+LT_MONTHS[d.getUTCMonth()];
+      let html=`<p style="font-size:12px;font-weight:600;color:#999;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">${label}</p><div class="cal-time-grid">`;
+      for (const slot of daySlots) {
+        const t=new Date(slot.time);
+        const hhmm=t.toLocaleTimeString('lt-LT',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Vilnius'});
+        const isSel=selectedSlot&&selectedSlot.start===slot.time;
+        html+=`<button class="slot-btn${isSel?' cal-selected':''}" style="${isSel?'background:#c9a96e;color:white;':''}" onclick="selectSlotWiz('${slot.time}','${label}, ${hhmm}',this)">${hhmm}</button>`;
+      }
+      timesEl.innerHTML=html+'</div>';
+    }
+
+    function selectSlotWiz(start, label, el) {
+      document.querySelectorAll('.slot-btn').forEach(b=>{b.classList.remove('cal-selected');b.style.background='';b.style.color='';});
+      el.classList.add('cal-selected'); el.style.background='#c9a96e'; el.style.color='white';
+      selectedSlot={start,label};
+      document.getElementById('booking-next').disabled=false;
+    }
+
+    // ── WIZARD NAVIGATION ───────────────────────────────────────────────────
+    async function bookingNext() {
+      const nextBtn=document.getElementById('booking-next');
+      if (wizStep===1) {
+        const n=document.getElementById('book-name-wiz')?.value.trim();
+        const e=document.getElementById('book-email-wiz')?.value.trim();
+        if (!n||!e){alert('Įveskite vardą ir el. paštą');return;}
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert('Įveskite teisingą el. pašto adresą (pvz. vardas@gmail.com)');return;}
+        const contactChanged=n!==bookName||e!==bookEmail;
+        bookName=n; bookEmail=e;
+        if (contactChanged){selectedSlot=null;selectedDay=null;}
+        nextBtn.disabled=true; nextBtn.textContent='Kraunama...';
+        try {
+          const res=await fetch(API+'?action=slots');
+          const data=await res.json();
+          if (data.error) throw new Error(data.error);
+          bookEventTypeId=data.eventTypeId; allSlots=data.slots;
+          renderStep(2);
+        } catch {
+          nextBtn.disabled=false; nextBtn.textContent='Toliau →';
+          alert('Nepavyko gauti laisvų laikų. Bandykite vėliau.');
+        }
+      } else if (wizStep===2) {
+        if (!selectedSlot) return;
+        renderStep(3);
+      } else if (wizStep===3) {
+        await confirmBooking();
+      }
+    }
+
+    function bookingBack() {
+      if (wizStep===2) renderStep(1);
+      else if (wizStep===3) renderStep(2);
+    }
+
+    async function confirmBooking() {
+      const nextBtn=document.getElementById('booking-next');
+      const backBtn=document.getElementById('booking-back');
+      nextBtn.disabled=true; nextBtn.textContent='Rezervuojama...'; backBtn.disabled=true;
+      try {
+        const params=new URLSearchParams({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId});
+        const res=await fetch(API+'?'+params);
+        const data=await res.json();
+        if (data.status==='error'||data.error) throw new Error(data.message||data.error);
+        bookingUid=data.data?.uid||data.uid||data.bookingId||data.id||null;
+        hideWizard(); setStep(0);
+        appendCard(`<div class="confirm-card">
+          <div class="confirm-icon">✓</div>
+          <strong>Vizitas užregistruotas!</strong>
+          <p style="margin-top:6px">${selectedSlot.label}</p>
+          <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
+          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
+        </div>`);
+      } catch {
+        nextBtn.disabled=false; nextBtn.textContent='Patvirtinti ✓'; backBtn.disabled=false;
+        typeMessage('Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
+      }
+    }
 
     function addMessage(role, text) {
       const d = document.createElement('div');
@@ -510,170 +713,35 @@
         <button onclick="startBooking()">📅 Rezervuoti vizitą</button></div>`);
     }
 
-    function startBooking() {
-      setStep(1);
-      appendCard(`<div class="contact-card" id="contact-card">
-        <p>Įveskite savo kontaktus:</p>
-        <input type="text" id="book-name" placeholder="Vardas Pavardė">
-        <input type="email" id="book-email" placeholder="el.pastas@gmail.com">
-        <button id="contact-submit-btn" onclick="submitContact()">Toliau →</button>
-      </div>`);
-    }
-
-    async function submitContact() {
-      const n = document.getElementById('book-name')?.value.trim();
-      const e = document.getElementById('book-email')?.value.trim();
-      const btn = document.getElementById('contact-submit-btn');
-      if (!n || !e) { alert('Įveskite vardą ir el. paštą'); return; }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(e)) { alert('Įveskite teisingą el. pašto adresą (pvz. vardas@gmail.com)'); return; }
-      if (btn) { btn.disabled = true; btn.textContent = 'Kraunama...'; }
-      bookName = n; bookEmail = e;
-      const card = document.getElementById('contact-card');
-      if (card) card.innerHTML = `
-        <p style="margin-bottom:8px;font-weight:600;font-size:13px;color:#333">Kontaktai patvirtinti ✓</p>
-        <div style="background:#f5f5f5;border-radius:8px;padding:8px 12px;font-size:13px;color:#555;line-height:1.8">
-          <div>👤 ${n}</div>
-          <div>✉️ ${e}</div>
-        </div>`;
-      showTyping();
-      try {
-        const res = await fetch(API + '?action=slots');
-        const data = await res.json();
-        hideTyping();
-        if (data.error) throw new Error(data.error);
-        bookEventTypeId = data.eventTypeId;
-        setStep(2);
-        showSlots(data.slots);
-      } catch(err) {
-        hideTyping();
-        typeMessage( 'Nepavyko gauti laisvų laikų. Bandykite vėliau.');
-      }
-    }
-
-    let allSlots = {};
-
-    function showSlots(slots) {
-      allSlots = slots;
-      const availableDays = new Set(
-        Object.keys(slots).filter(d => slots[d].some(s => { const m = new Date(s.time).getMinutes(); return m === 0 || m === 30; }))
-      );
-      if (!availableDays.size) { typeMessage('Šiuo metu laisvų laikų nėra. Pabandykite vėliau.'); return; }
-
-      const firstAvail = new Date([...availableDays].sort()[0] + 'T12:00:00Z');
-      const year = firstAvail.getUTCFullYear();
-      const month = firstAvail.getUTCMonth();
-      const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
-      const firstDow = (new Date(Date.UTC(year, month, 1)).getUTCDay() + 6) % 7;
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
-
-      let html = `<div class="slots-card">
-        <p style="margin-bottom:10px">Pasirinkite dieną:</p>
-        <div class="cal-header">${LT_MONTHS[month]} ${year}</div>
-        <div class="cal-grid">`;
-      for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
-      for (let i = 0; i < firstDow; i++) html += `<div class="cal-day cal-empty"></div>`;
-      for (let d = 1; d <= daysInMonth; d++) {
-        const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if (ds < todayStr || !availableDays.has(ds))
-          html += `<div class="cal-day ${ds < todayStr ? 'cal-past' : 'cal-unavailable'}">${d}</div>`;
-        else
-          html += `<div class="cal-day cal-available" onclick="selectDay('${ds}',this)">${d}</div>`;
-      }
-      html += `</div><div class="cal-times" id="cal-times"></div></div>`;
-      appendCard(html);
-      document.getElementById('chat-panel').classList.add('expanded');
-    }
-
-    function selectDay(dateStr, el) {
-      document.querySelectorAll('.cal-available').forEach(d => d.classList.remove('cal-selected'));
-      el.classList.add('cal-selected');
-      const timesEl = document.getElementById('cal-times');
-      if (!timesEl) return;
-      const daySlots = (allSlots[dateStr] || []).filter(s => { const m = new Date(s.time).getMinutes(); return m === 0 || m === 30; });
-      if (!daySlots.length) { timesEl.innerHTML = '<p style="font-size:12px;color:#999">Šią dieną laikų nėra.</p>'; return; }
-      const d = new Date(dateStr + 'T12:00:00Z');
-      const label = LT_DAYS[d.getUTCDay()] + ', ' + d.getUTCDate() + ' ' + LT_MONTHS[d.getUTCMonth()];
-      let html = '<p style="font-size:12px;font-weight:600;color:#999;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">' + label + '</p><div class="cal-time-grid">';
-      for (const slot of daySlots) {
-        const t = new Date(slot.time);
-        const hhmm = t.toLocaleTimeString('lt-LT', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Vilnius' });
-        html += `<button class="slot-btn" onclick="preConfirmSlot('${slot.time}','${label}, ${hhmm}')">${hhmm}</button>`;
-      }
-      html += '</div>';
-      timesEl.innerHTML = html;
-      scrollBottom();
-    }
-
-    async function bookSlot(start, label) {
-      document.querySelector('.pre-confirm-card')?.remove();
-      addMessage('user', '🕐 ' + label);
-      showTyping();
-      try {
-        const params = new URLSearchParams({ action:'book', start, name:bookName, email:bookEmail, eventTypeId:bookEventTypeId });
-        const res = await fetch(API + '?' + params);
-        const data = await res.json();
-        hideTyping();
-        if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
-        bookingUid = data.data?.uid || data.uid || data.bookingId || data.id || null;
-        setStep(3);
-        document.getElementById('chat-panel').classList.remove('expanded');
-        appendCard(`<div class="confirm-card">
-          <div class="confirm-icon">✓</div>
-          <strong>Vizitas užregistruotas!</strong>
-          <p style="margin-top:6px">${label}</p>
-          <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
-          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
-        </div>`);
-      } catch(err) {
-        hideTyping();
-        typeMessage( 'Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
-      }
-    }
-
-    function preConfirmSlot(start, label) {
-      document.querySelectorAll('.slot-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.45'; });
-      appendCard(`<div class="pre-confirm-card">
-        <p>Pasirinktas laikas:</p>
-        <div style="font-weight:600;font-size:14px;color:#2c2c2c;margin-bottom:14px">🕐 ${label}</div>
-        <div style="display:flex;gap:8px">
-          <button onclick="bookSlot('${start.replace(/'/g,"\\'")}','${label.replace(/'/g,"\\'")}');this.closest('.pre-confirm-card').querySelectorAll('button').forEach(b=>b.disabled=true)" style="flex:1;padding:10px;background:#c9a96e;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Patvirtinti ✓</button>
-          <button onclick="cancelPreConfirm()" style="flex:1;padding:10px;background:#f0ebe4;color:#555;border:none;border-radius:10px;font-size:14px;cursor:pointer">Atšaukti</button>
-        </div>
-      </div>`);
-    }
-
-    function cancelPreConfirm() {
-      document.querySelector('.pre-confirm-card')?.remove();
-      document.querySelectorAll('.slot-btn').forEach(b => { b.disabled = false; b.style.opacity = '1'; });
-    }
+    function startBooking() { showWizard(); renderStep(1); }
 
     async function editBooking() {
       const btn = document.querySelector('.confirm-card .edit-btn');
-      if (btn) { btn.disabled = true; btn.textContent = 'Atšaukiama...'; }
+      if (btn) { btn.disabled=true; btn.textContent='Atšaukiama...'; }
       try {
         if (bookingUid) {
-          const res = await fetch(API + '?action=cancel&bookingUid=' + encodeURIComponent(bookingUid));
-          const data = await res.json();
+          const res=await fetch(API+'?action=cancel&bookingUid='+encodeURIComponent(bookingUid));
+          const data=await res.json();
           if (data.error) throw new Error(data.error);
         }
-        bookingUid = null;
+        bookingUid=null;
         document.querySelector('.confirm-card')?.remove();
-        document.getElementById('chat-panel').classList.add('expanded');
-        typeMessage( 'Vizitas atšauktas. Pasirinkite naują laiką:');
-        showTyping();
-        const r2 = await fetch(API + '?action=slots');
-        const d2 = await r2.json();
-        hideTyping();
-        if (d2.error) throw new Error(d2.error);
-        bookEventTypeId = d2.eventTypeId;
+        showWizard();
+        const content=document.getElementById('booking-step-content');
+        content.innerHTML='<div style="text-align:center;padding:40px 20px;color:#aaa;font-size:13px">Kraunama...</div>';
+        document.getElementById('booking-next').disabled=true;
+        document.getElementById('booking-back').style.visibility='visible';
         setStep(2);
-        showSlots(d2.slots);
-      } catch(err) {
-        hideTyping();
-        if (btn) { btn.disabled = false; btn.textContent = '✏️ Keisti vizito laiką'; }
-        typeMessage( 'Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
+        const r2=await fetch(API+'?action=slots');
+        const d2=await r2.json();
+        if (d2.error) throw new Error(d2.error);
+        bookEventTypeId=d2.eventTypeId; allSlots=d2.slots;
+        selectedSlot=null; selectedDay=null;
+        renderStep(2);
+      } catch {
+        hideWizard();
+        if (btn){btn.disabled=false;btn.textContent='✏️ Keisti vizito laiką';}
+        typeMessage('Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
       }
     }
 
@@ -712,11 +780,11 @@
     }
 
     function restartChat() {
-      document.getElementById('chat-messages').innerHTML = '';
-      document.getElementById('chat-panel').classList.remove('expanded');
-      chatOpened = true;
-      bookingShown = false;
-      bookName = ''; bookEmail = ''; bookEventTypeId = null; bookingUid = null;
+      hideWizard();
+      document.getElementById('chat-messages').innerHTML='';
+      chatOpened=true; bookingShown=false;
+      bookName=''; bookEmail=''; bookEventTypeId=null; bookingUid=null;
+      selectedSlot=null; selectedDay=null; allSlots={};
       setStep(0);
       typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
       setTimeout(showBookingButton, 300);
