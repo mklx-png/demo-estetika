@@ -477,6 +477,10 @@
 
   <script>
     const API = 'https://project-zk9l5.vercel.app/api/chat';
+    const CLINIC_ID = 'demo-estetika';
+    function apiUrl(params) {
+      return API + '?' + new URLSearchParams({ ...params, clinicId: CLINIC_ID }).toString();
+    }
     const BOOKING_KEYWORDS = ['užsiregistruoti','registruotis','registracija','rezervuoti',
       'rezervacija','užsisakyti','kada galima','laisvas laikas','vizitas','apsilankyti',
       'book','booking','appointment'];
@@ -671,7 +675,7 @@
         if (slotsForService===selectedService.name && Object.keys(allSlots).length>0) { renderStep(3); return; }
         nextBtn.disabled=true; nextBtn.textContent='Kraunama...';
         try {
-          const res=await fetch(API+'?action=slots&service='+encodeURIComponent(selectedService.name));
+          const res=await fetch(apiUrl({action:'slots',service:selectedService.name}));
           const data=await res.json();
           if (data.error) throw new Error(data.error);
           bookEventTypeId=data.eventTypeId; allSlots=data.slots; slotsForService=selectedService.name;
@@ -699,8 +703,7 @@
       const backBtn=document.getElementById('booking-back');
       nextBtn.disabled=true; nextBtn.textContent='Rezervuojama...'; backBtn.disabled=true;
       try {
-        const params=new URLSearchParams({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId,service:selectedService?.name||''});
-        const res=await fetch(API+'?'+params);
+        const res=await fetch(apiUrl({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId,service:selectedService?.name||''}));
         const data=await res.json();
         if (data.status==='error'||data.error) throw new Error(data.message||data.error);
         bookingUid=data.data?.uid||data.uid||data.bookingId||data.id||null;
@@ -771,7 +774,7 @@
       if (btn) { btn.disabled=true; btn.textContent='Atšaukiama...'; }
       try {
         if (bookingUid) {
-          const res=await fetch(API+'?action=cancel&bookingUid='+encodeURIComponent(bookingUid));
+          const res=await fetch(apiUrl({action:'cancel',bookingUid}));
           const data=await res.json();
           if (data.error) throw new Error(data.error);
         }
@@ -843,7 +846,7 @@
       input.value = ''; input.disabled = true; btn.disabled = true;
       showTyping();
       try {
-        const res = await fetch(API + '?message=' + encodeURIComponent(text));
+        const res = await fetch(apiUrl({message:text}));
         const data = await res.json();
         const reply = data.reply || 'Atsiprašau, įvyko klaida.';
         hideTyping();

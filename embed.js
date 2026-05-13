@@ -2,14 +2,20 @@
   const script = document.currentScript;
 
   // ── CONFIG (editable via data attributes on the script tag) ─────────────────
-  const API      = script?.dataset.api      || 'https://project-zk9l5.vercel.app/api/chat';
-  const CLINIC   = script?.dataset.clinic   || 'DEMO ESTETIKA';
-  const SUB      = script?.dataset.sub      || 'Asistentė';
-  const COLOR    = script?.dataset.color    || '#c9a96e';
-  const TOOLTIP  = script?.dataset.tooltip  || 'Pasiteirauk ir užsiregistruok 😊';
-  const GREETING = script?.dataset.greeting || 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?';
-  const BOOK_BTN = script?.dataset.bookBtn  || '📅 Rezervuoti vizitą';
-  const BOOK_MSG = script?.dataset.bookMsg  || 'Pasirinkite patogų laiką — registracija užtruks mažiau nei minutę.';
+  const API       = script?.dataset.api      || 'https://project-zk9l5.vercel.app/api/chat';
+  const CLINIC    = script?.dataset.clinic   || 'DEMO ESTETIKA';
+  const SUB       = script?.dataset.sub      || 'Asistentė';
+  const COLOR     = script?.dataset.color    || '#c9a96e';
+  const TOOLTIP   = script?.dataset.tooltip  || 'Pasiteirauk ir užsiregistruok 😊';
+  const GREETING  = script?.dataset.greeting || 'Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?';
+  const BOOK_BTN  = script?.dataset.bookBtn  || '📅 Rezervuoti vizitą';
+  const BOOK_MSG  = script?.dataset.bookMsg  || 'Pasirinkite patogų laiką — registracija užtruks mažiau nei minutę.';
+  const CLINIC_ID = script?.dataset.clinicId || 'demo-estetika';
+
+  function apiUrl(params) {
+    const p = new URLSearchParams({ ...params, clinicId: CLINIC_ID });
+    return API + '?' + p.toString();
+  }
 
   // ── CSS ─────────────────────────────────────────────────────────────────────
   const css = `
@@ -235,7 +241,7 @@
         <div>👤 ${n}</div><div>✉️ ${e}</div></div>`;
     cwTyping();
     try {
-      const res = await fetch(API + '?action=slots');
+      const res = await fetch(apiUrl({action:'slots'}));
       const data = await res.json();
       cwHideTyping();
       if (data.error) throw new Error(data.error);
@@ -314,8 +320,7 @@
     cwAddMsg('user','🕐 '+label);
     cwTyping();
     try {
-      const params = new URLSearchParams({action:'book',start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId});
-      const res = await fetch(API+'?'+params);
+      const res = await fetch(apiUrl({action:'book',start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId}));
       const data = await res.json();
       cwHideTyping();
       if (data.status==='error'||data.error) throw new Error(data.message||data.error);
@@ -337,7 +342,7 @@
     if (btn) { btn.disabled=true; btn.textContent='Atšaukiama...'; }
     try {
       if (bookingUid) {
-        const res = await fetch(API+'?action=cancel&bookingUid='+encodeURIComponent(bookingUid));
+        const res = await fetch(apiUrl({action:'cancel',bookingUid}));
         const data = await res.json();
         if (data.error) throw new Error(data.error);
       }
@@ -346,7 +351,7 @@
       panel().classList.add('cw-expanded');
       cwType('Vizitas atšauktas. Pasirinkite naują laiką:');
       cwTyping();
-      const r2 = await fetch(API+'?action=slots');
+      const r2 = await fetch(apiUrl({action:'slots'}));
       const d2 = await r2.json();
       cwHideTyping();
       if (d2.error) throw new Error(d2.error);
@@ -371,7 +376,7 @@
     input.value=''; input.disabled=true; btn.disabled=true;
     cwTyping();
     try {
-      const res = await fetch(API+'?message='+encodeURIComponent(text));
+      const res = await fetch(apiUrl({message:text}));
       const data = await res.json();
       cwHideTyping();
       cwType(data.reply||'Atsiprašau, įvyko klaida.');
