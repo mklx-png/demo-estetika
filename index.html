@@ -223,25 +223,34 @@
     .cal-times { margin-top: 12px; border-top: 1px solid #f0ebe4; padding-top: 10px; }
     .cal-time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .confirm-card {
-      background: white; border: none;
-      border-radius: 16px; border-bottom-left-radius: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      width: auto; max-width: 200px; padding: 16px 18px;
-      text-align: left;
+      align-self: flex-start; width: 100%; background: white;
+      border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 20px 18px; text-align: center; animation: msgIn 0.25s ease both;
     }
     .confirm-card .confirm-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: #c9a96e; display: flex; align-items: center; justify-content: center;
-      font-size: 14px; margin-bottom: 10px; color: white;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #c9a96e, #b8925a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin: 0 auto 14px; color: white;
+      box-shadow: 0 4px 12px rgba(201,169,110,0.35);
     }
-    .confirm-card strong { color: #1a1a1a; font-size: 13px; display: block; margin-bottom: 8px; font-weight: 600; }
-    .confirm-card p { font-size: 12px !important; color: #888; margin-bottom: 4px !important; line-height: 1.5; }
-    .confirm-card p strong { color: #555; font-size: 12px; display: inline; }
+    .confirm-card .confirm-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+    .confirm-card .confirm-row {
+      display: flex; align-items: center; gap: 10px;
+      background: #faf7f3; border-radius: 10px; padding: 10px 12px;
+      margin-bottom: 8px; text-align: left;
+    }
+    .confirm-card .confirm-row-icon { font-size: 16px; flex-shrink: 0; }
+    .confirm-card .confirm-row-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
+    .confirm-card .confirm-row-val { font-size: 13px; font-weight: 600; color: #2c2c2c; margin-top: 1px; }
+    .confirm-card .confirm-email { font-size: 12px; color: #aaa; margin: 10px 0 14px; line-height: 1.5; }
     .confirm-card .edit-btn {
-      margin-top: 10px; padding: 0; background: transparent; border: none;
-      color: #c9a96e; font-size: 11px; cursor: pointer; font-family: inherit;
-      text-decoration: underline; text-underline-offset: 2px;
+      width: 100%; padding: 10px; background: transparent;
+      border: 1.5px solid #e8e4df; border-radius: 10px;
+      color: #999; font-size: 13px; cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
     }
+    .confirm-card .edit-btn:hover { border-color: #c9a96e; color: #c9a96e; }
     .confirm-card .edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
     .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
@@ -710,10 +719,16 @@
         hideWizard(); setStep(0);
         appendCard(`<div class="confirm-card">
           <div class="confirm-icon">✓</div>
-          <strong>Vizitas užregistruotas!</strong>
-          <p style="margin-top:6px;color:#c9a96e;font-size:12px">${selectedService?.icon} ${selectedService?.name}</p>
-          <p style="margin-top:4px">${selectedSlot.label}</p>
-          <p>Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></p>
+          <div class="confirm-title">Vizitas užregistruotas!</div>
+          <div class="confirm-row">
+            <span class="confirm-row-icon">${selectedService?.icon}</span>
+            <div><div class="confirm-row-label">Paslauga</div><div class="confirm-row-val">${selectedService?.name}</div></div>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-row-icon">📅</span>
+            <div><div class="confirm-row-label">Laikas</div><div class="confirm-row-val">${selectedSlot.label}</div></div>
+          </div>
+          <div class="confirm-email">Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></div>
           <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
         </div>`);
       } catch {
