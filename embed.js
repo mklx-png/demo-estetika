@@ -46,8 +46,10 @@
     @keyframes cwPanelIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
     #cw-panel.cw-expanded{height:calc(100vh - 40px);bottom:20px;width:420px}
     #cw-header{background:#2c2c2c;color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-    #cw-header .cw-name{font-weight:600;font-size:15px;letter-spacing:1px}
+    #cw-header .cw-name{font-weight:600;font-size:15px;letter-spacing:2px;text-transform:uppercase}
     #cw-header .cw-sub{font-size:12px;color:#aaa;margin-top:2px}
+    #cw-header-line{height:2px;background:linear-gradient(90deg,${COLOR} 0%,rgba(201,169,110,0.15) 100%);flex-shrink:0}
+    #cw-step{font-size:14px;color:rgba(255,255,255,0.75);letter-spacing:1px;display:none}
     #cw-close{background:none;border:none;color:white;cursor:pointer;font-size:22px;padding:0;width:auto}
     #cw-restart{background:none;border:none;color:white;cursor:pointer;padding:4px;font-size:18px;line-height:1;transition:color 0.2s}
     #cw-restart:hover{color:${COLOR} !important}
@@ -128,11 +130,13 @@
           <div class="cw-name">${CLINIC}</div>
           <div class="cw-sub">${SUB}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="cw-step"></span>
           <button id="cw-restart" onclick="cwRestart()" title="Pradėti iš naujo">↺</button>
           <button id="cw-close" onclick="cwToggle()">×</button>
         </div>
       </div>
+      <div id="cw-header-line"></div>
       <div id="cw-messages"></div>
       <div id="cw-input-wrap">
         <input type="text" id="cw-input" placeholder="Užduokite klausimą...">
@@ -151,6 +155,13 @@
 
   let opened = false, bookingShown = false;
   let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null, allSlots = {};
+
+  function cwSetStep(n) {
+    const el = document.getElementById('cw-step');
+    if (!el) return;
+    if (n > 0) { el.textContent = n + ' / 3'; el.style.display = 'block'; }
+    else { el.textContent = ''; el.style.display = 'none'; }
+  }
 
   const panel   = () => document.getElementById('cw-panel');
   const msgsEl  = () => document.getElementById('cw-messages');
@@ -200,6 +211,7 @@
   }
 
   window.cwStartBooking = function() {
+    cwSetStep(1);
     cwCard(`<div class="cw-card" id="cw-contact">
       <p>Įveskite savo kontaktus:</p>
       <input class="cw-contact-input" type="text" id="cw-name" placeholder="Vardas Pavardė">
@@ -228,6 +240,7 @@
       cwHideTyping();
       if (data.error) throw new Error(data.error);
       bookEventTypeId = data.eventTypeId;
+      cwSetStep(2);
       cwShowSlots(data.slots);
     } catch { cwHideTyping(); cwType('Nepavyko gauti laisvų laikų. Bandykite vėliau.'); }
   };
@@ -307,6 +320,7 @@
       cwHideTyping();
       if (data.status==='error'||data.error) throw new Error(data.message||data.error);
       bookingUid = data.data?.uid||data.uid||data.bookingId||data.id||null;
+      cwSetStep(3);
       panel().classList.remove('cw-expanded');
       cwCard(`<div class="cw-confirm">
         <div class="cw-confirm-icon">✓</div>
@@ -337,6 +351,7 @@
       cwHideTyping();
       if (d2.error) throw new Error(d2.error);
       bookEventTypeId = d2.eventTypeId;
+      cwSetStep(2);
       cwShowSlots(d2.slots);
     } catch {
       cwHideTyping();
@@ -404,6 +419,7 @@
     panel().classList.remove('cw-expanded');
     opened=true; bookingShown=false;
     bookName=''; bookEmail=''; bookEventTypeId=null; bookingUid=null;
+    cwSetStep(0);
     cwType(GREETING);
     setTimeout(cwShowBookBtn, 300);
   };
