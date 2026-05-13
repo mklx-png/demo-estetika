@@ -213,7 +213,7 @@
   // ── BOOKING FLOW ─────────────────────────────────────────────────────────────
   function cwShowBookBtn() {
     if (bookingShown) return; bookingShown = true;
-    cwCard(`<div class="cw-card"><p>${BOOK_MSG}</p><button class="cw-book-btn" onclick="cwStartBooking()">${BOOK_BTN}</button></div>`);
+    cwCard(`<div class="cw-card"><button class="cw-book-btn" onclick="cwStartBooking()">${BOOK_BTN}</button></div>`);
   }
 
   window.cwStartBooking = function() {

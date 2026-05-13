@@ -533,7 +533,7 @@
       const content = document.getElementById('booking-step-content');
       const backBtn = document.getElementById('booking-back');
       const nextBtn = document.getElementById('booking-next');
-      backBtn.style.visibility = n === 1 ? 'hidden' : 'visible';
+      backBtn.style.visibility = 'visible';
       backBtn.disabled = false;
       if (n === 1) {
         nextBtn.textContent = 'Toliau →'; nextBtn.disabled = false;
@@ -693,7 +693,8 @@
     }
 
     function bookingBack() {
-      if (wizStep===2) renderStep(1);
+      if (wizStep===1) { hideWizard(); setStep(0); }
+      else if (wizStep===2) renderStep(1);
       else if (wizStep===3) renderStep(2);
       else if (wizStep===4) renderStep(3);
     }
@@ -763,7 +764,6 @@
     function showBookingButton() {
       if (bookingShown) return; bookingShown = true;
       appendCard(`<div class="book-card">
-        <p>Pasirinkite patogų laiką — registracija užtruks mažiau nei minutę.</p>
         <button onclick="startBooking()">📅 Rezervuoti vizitą</button></div>`);
     }
 
