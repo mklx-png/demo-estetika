@@ -293,6 +293,30 @@
     .bk-service-name { font-size: 12.5px; font-weight: 600; color: #2c2c2c; }
     .bk-service-price { font-size: 11px; color: #c9a96e; margin-top: 3px; }
 
+    /* ── CHAT ATTENTION ARROWS ── */
+    .ca {
+      position: fixed;
+      z-index: 9996;
+      color: #ff3333;
+      font-size: 22px;
+      line-height: 1;
+      pointer-events: none;
+      text-shadow: 0 0 10px rgba(255,51,51,0.5);
+    }
+    /* Above bubble, pointing down */
+    .ca-top  { bottom: 104px; right: 46px;  animation: caDown   0.65s ease-in-out infinite alternate; }
+    /* Left of bubble, pointing right */
+    .ca-left { bottom: 48px;  right: 104px; animation: caRight  0.65s ease-in-out 0.18s infinite alternate; }
+    /* Top-left diagonal, pointing toward bubble */
+    .ca-tl   { bottom: 104px; right: 104px; animation: caDiagTL 0.65s ease-in-out 0.32s infinite alternate; }
+    /* Top-right diagonal, pointing toward bubble */
+    .ca-tr   { bottom: 104px; right: 20px;  animation: caDiagTR 0.65s ease-in-out 0.1s  infinite alternate; }
+
+    @keyframes caDown   { from{transform:translateY(-9px);opacity:.25} to{transform:translateY(0);opacity:1} }
+    @keyframes caRight  { from{transform:translateX(-9px);opacity:.25} to{transform:translateX(0);opacity:1} }
+    @keyframes caDiagTL { from{transform:translate(-7px,-7px);opacity:.25} to{transform:translate(0,0);opacity:1} }
+    @keyframes caDiagTR { from{transform:translate(7px,-7px);opacity:.25} to{transform:translate(0,0);opacity:1} }
+
     @media (max-width: 600px) {
       /* Chat full screen */
       #chat-panel, #chat-panel.open, #chat-panel.expanded {
@@ -304,6 +328,12 @@
         border-radius: 0 !important;
       }
       #chat-bubble { bottom: 16px; right: 16px; }
+
+      /* Arrow positions adjusted for mobile bubble position */
+      .ca-top  { bottom: 96px; right: 38px; }
+      .ca-left { bottom: 40px; right: 96px; }
+      .ca-tl   { bottom: 96px; right: 96px; }
+      .ca-tr   { bottom: 96px; right: 12px; }
 
       /* Nav */
       nav { padding: 14px 20px; }
@@ -453,6 +483,14 @@
   <div id="chat-bubble" onclick="toggleChat()">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
     <div class="pulse" id="chat-badge">1</div>
+  </div>
+
+  <!-- 4 red attention arrows pointing at the chat bubble -->
+  <div id="chat-arrows" aria-hidden="true">
+    <span class="ca ca-top">▼</span>
+    <span class="ca ca-left">►</span>
+    <span class="ca ca-tl">↘</span>
+    <span class="ca ca-tr">↙</span>
   </div>
 
   <div id="chat-panel">
@@ -829,6 +867,8 @@
       const panel = document.getElementById('chat-panel');
       panel.classList.toggle('open');
       document.getElementById('chat-badge').style.display = 'none';
+      // Hide attention arrows permanently once user notices the chat
+      document.getElementById('chat-arrows').style.display = 'none';
       setBodyLock(panel.classList.contains('open'));
       if (!chatOpened && panel.classList.contains('open')) {
         chatOpened = true;
