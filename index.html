@@ -1,920 +1,952 @@
-<!DOCTYPE html>
-<html lang="lt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Demo Estetika — Estetinės medicinos klinika Vilniuje</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #fff; color: #333; }
+ <!DOCTYPE html>
+  <html lang="lt">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Demo Estetika — Estetinės medicinos klinika Vilniuje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;5
+  00&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Inter', sans-serif; background: #fff; color: #333; }
 
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 48px; background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(8px); border-bottom: 1px solid #f0ebe4;
-    }
-    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; letter-spacing: 3px; color: #2c2c2c; text-decoration: none; }
-    .nav-links { display: flex; gap: 32px; list-style: none; }
-    .nav-links a { text-decoration: none; color: #555; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
-    .nav-links a:hover { color: #c9a96e; }
-    .nav-cta { background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 4px; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
-    .nav-cta:hover { background: #c9a96e; }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh; display: flex; align-items: center;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 50%, #3d3020 100%);
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.15) 0%, transparent 60%);
-    }
-    .hero-content { max-width: 1100px; margin: 0 auto; padding: 120px 48px 80px; position: relative; }
-    .hero-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #c9a96e; margin-bottom: 24px; }
-    .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 300; color: white; line-height: 1.1; margin-bottom: 24px; }
-    .hero h1 em { font-style: italic; color: #c9a96e; }
-    .hero p { font-size: 1rem; color: #aaa; max-width: 480px; line-height: 1.7; margin-bottom: 40px; }
-    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
-    .btn-gold { background: #c9a96e; color: white; padding: 14px 32px; border: none; border-radius: 4px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
-    .btn-gold:hover { background: #b8925a; }
-    .btn-outline { background: transparent; color: white; padding: 14px 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-    .btn-outline:hover { border-color: #c9a96e; color: #c9a96e; }
-    .hero-stats { display: flex; gap: 48px; margin-top: 64px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); }
-    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: #c9a96e; }
-    .stat-label { font-size: 0.8rem; color: #777; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-
-    /* SERVICES */
-    .services { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
-    .section-tag { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #c9a96e; margin-bottom: 16px; }
-    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: #2c2c2c; margin-bottom: 48px; }
-    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
-    .service-card { background: #fdf6f0; border-radius: 12px; padding: 32px 24px; transition: transform 0.2s, box-shadow 0.2s; }
-    .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
-    .service-icon { font-size: 2rem; margin-bottom: 16px; }
-    .service-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: #2c2c2c; margin-bottom: 8px; }
-    .service-card p { font-size: 0.85rem; color: #777; line-height: 1.6; }
-    .service-price { margin-top: 16px; font-size: 0.9rem; font-weight: 500; color: #c9a96e; }
-
-    /* WHY */
-    .why { background: #2c2c2c; padding: 100px 48px; }
-    .why-inner { max-width: 1100px; margin: 0 auto; }
-    .why .section-title { color: white; }
-    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; margin-top: 48px; }
-    .why-item { border-left: 2px solid #c9a96e; padding-left: 24px; }
-    .why-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: white; margin-bottom: 10px; }
-    .why-item p { font-size: 0.85rem; color: #888; line-height: 1.7; }
-
-    /* REVIEWS */
-    .reviews { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
-    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 48px; }
-    .review-card { background: #fdf6f0; border-radius: 12px; padding: 28px; }
-    .review-stars { color: #c9a96e; font-size: 1rem; margin-bottom: 12px; }
-    .review-text { font-size: 0.9rem; color: #555; line-height: 1.7; margin-bottom: 16px; font-style: italic; }
-    .review-author { font-size: 0.8rem; font-weight: 500; color: #2c2c2c; }
-
-    /* FOOTER */
-    footer { background: #1a1a1a; padding: 48px; }
-    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
-    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; letter-spacing: 3px; color: white; }
-    .footer-info { font-size: 0.8rem; color: #666; line-height: 1.8; }
-    .footer-info a { color: #c9a96e; text-decoration: none; }
-
-    /* ========== CHAT WIDGET ========== */
-    #chat-bubble {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 64px; height: 64px; border-radius: 50%;
-      background: #c9a96e; color: white;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      z-index: 9998; transition: transform 0.2s;
-      font-family: -apple-system, sans-serif;
-      animation: bubbleIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) 0.4s both;
-    }
-    @keyframes bubbleIn {
-      from { opacity: 0; transform: scale(0.4); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    #chat-bubble:hover { transform: scale(1.08); background: #b8925a; }
-    #chat-bubble svg { width: 28px; height: 28px; }
-    #chat-tooltip {
-      position: fixed; bottom: 104px; right: 24px;
-      background: #2c2c2c; color: #f0ebe4; font-size: 12.5px;
-      font-weight: 400; letter-spacing: 0.2px;
-      line-height: 1.5; padding: 10px 16px; border-radius: 20px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-      white-space: nowrap; text-align: center;
-      z-index: 9997; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      animation: fadeInUp 0.5s ease 1.2s both;
-    }
-    #chat-tooltip::after {
-      content: ''; position: absolute; bottom: -6px; right: 28px;
-      width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-top: 6px solid #2c2c2c;
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    #chat-bubble .pulse {
-      position: absolute; top: -6px; right: -6px;
-      background: #ff4444; color: white; font-size: 11px;
-      width: 22px; height: 22px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; font-family: -apple-system, sans-serif;
-    }
-    #chat-panel {
-      position: fixed; bottom: 100px; right: 24px;
-      width: 380px; max-width: calc(100vw - 32px);
-      height: 580px; max-height: calc(100vh - 120px);
-      background: white; border-radius: 16px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-      display: none; flex-direction: column;
-      z-index: 9999; overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      transition: height 0.35s ease, width 0.35s ease, bottom 0.35s ease;
-    }
-    #chat-panel.open {
-      display: flex;
-      animation: panelIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    }
-    @keyframes panelIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.95); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    #chat-panel.expanded {
-      height: calc(100vh - 40px);
-      bottom: 20px;
-      width: 420px;
-    }
-    #chat-header {
-      background: #2c2c2c; color: white; padding: 16px 20px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-shrink: 0;
-    }
-    #chat-header .clinic-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
-    #chat-header .clinic-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
-    #chat-header-line { height: 2px; background: linear-gradient(90deg, #c9a96e 0%, rgba(201,169,110,0.15) 100%); flex-shrink: 0; }
-    #chat-step { font-size: 14px; color: rgba(255,255,255,0.75); letter-spacing: 1px; display: none; }
-    #chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 0; width: auto; }
-    #chat-restart:hover { color: #c9a96e !important; }
-    #chat-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      background: #faf7f3; display: flex; flex-direction: column; gap: 10px;
-    }
-    .msg { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-wrap: break-word; animation: msgIn 0.25s ease both; }
-    @keyframes msgIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .msg.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
-    .msg.ai a { color: #c9a96e; font-weight: 600; }
-    .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .book-card, .contact-card, .slots-card, .confirm-card, .pre-confirm-card {
-      align-self: flex-start; background: white;
-      border: 1.5px solid #c9a96e; border-radius: 14px; border-bottom-left-radius: 4px;
-      padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07); width: 100%;
-      animation: msgIn 0.25s ease both;
-    }
-    .book-card p, .contact-card p, .slots-card p, .confirm-card p, .pre-confirm-card p {
-      font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
-    }
-    .book-card button {
-      width: 100%; padding: 11px; background: #c9a96e; color: white;
-      border: none; border-radius: 8px; font-size: 14px;
-      cursor: pointer; font-weight: 600; letter-spacing: 0.5px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .book-card button:hover { background: #b8925a; }
-    .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
-    .contact-card input {
-      width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
-      font-size: 16px; margin-bottom: 8px; font-family: inherit; outline: none;
-    }
-    .contact-card input:focus { border-color: #c9a96e; }
-    .contact-card input::placeholder { font-size: 13px; color: #aaa; }
-    .contact-card button {
-      width: 100%; padding: 10px; background: #c9a96e; color: white;
-      border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
-    }
-    .contact-card button:hover { background: #b8925a; }
-    .slot-btn {
-      padding: 8px 4px; background: #fdf6f0; border: 1.5px solid #c9a96e;
-      border-radius: 8px; font-size: 13px; font-weight: 600; color: #c9a96e;
-      cursor: pointer; transition: all 0.15s; text-align: center;
-    }
-    .slot-btn:hover { background: #c9a96e; color: white; }
-    .slot-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    /* Calendar */
-    .cal-header { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #2c2c2c; text-align: center; margin-bottom: 10px; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-    .cal-dow { text-align: center; font-size: 10px; font-weight: 600; color: #bbb; text-transform: uppercase; padding: 3px 0 5px; }
-    .cal-day { text-align: center; font-size: 13px; padding: 6px 2px; border-radius: 7px; line-height: 1; }
-    .cal-available { background: #fdf6f0; border: 1.5px solid #c9a96e; color: #c9a96e; cursor: pointer; font-weight: 600; transition: all 0.15s; }
-    .cal-available:hover { background: #c9a96e; color: white; }
-    .cal-selected { background: #c9a96e !important; color: white !important; }
-    .cal-unavailable, .cal-past { color: #ddd; }
-    .cal-empty {}
-    .cal-times { margin-top: 12px; border-top: 1px solid #f0ebe4; padding-top: 10px; }
-    .cal-time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .confirm-card {
-      align-self: flex-start; width: 100%; background: white;
-      border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-      padding: 20px 18px; text-align: center; animation: msgIn 0.25s ease both;
-    }
-    .confirm-card .confirm-icon {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: linear-gradient(135deg, #c9a96e, #b8925a);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin: 0 auto 14px; color: white;
-      box-shadow: 0 4px 12px rgba(201,169,110,0.35);
-    }
-    .confirm-card .confirm-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-    .confirm-card .confirm-row {
-      display: flex; align-items: center; gap: 10px;
-      background: #faf7f3; border-radius: 10px; padding: 10px 12px;
-      margin-bottom: 8px; text-align: left;
-    }
-    .confirm-card .confirm-row-icon { font-size: 16px; flex-shrink: 0; }
-    .confirm-card .confirm-row-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
-    .confirm-card .confirm-row-val { font-size: 13px; font-weight: 600; color: #2c2c2c; margin-top: 1px; }
-    .confirm-card .confirm-email { font-size: 12px; color: #aaa; margin: 10px 0 14px; line-height: 1.5; }
-    .confirm-card .edit-btn {
-      width: 100%; padding: 10px; background: transparent;
-      border: 1.5px solid #e8e4df; border-radius: 10px;
-      color: #999; font-size: 13px; cursor: pointer; font-family: inherit;
-      transition: all 0.15s;
-    }
-    .confirm-card .edit-btn:hover { border-color: #c9a96e; color: #c9a96e; }
-    .confirm-card .edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self: flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
-    .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out; }
-    .typing span:nth-child(2) { animation-delay: 0.2s; }
-    .typing span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:.5;}40%{transform:scale(1);opacity:1;} }
-    #chat-input-wrap {
-      padding: 12px; background: white; border-top: 1px solid #eee;
-      display: flex; gap: 8px; flex-shrink: 0;
-    }
-    #chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; margin: 0; outline: none; font-family: inherit; }
-    #chat-input:focus { border-color: #c9a96e; }
-    #chat-send { width: auto; padding: 0 18px; background: #c9a96e; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; }
-    #chat-send:disabled { background: #ccc; cursor: not-allowed; }
-    #chat-footer { text-align: center; padding: 8px; font-size: 11px; color: #bbb; background: white; flex-shrink: 0; }
-
-    /* ── BOOKING WIZARD ── */
-    #booking-wizard { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
-    #booking-wizard.active { display: flex; }
-    #booking-step-content { flex: 1; overflow-y: auto; padding: 20px 16px 24px; background: #faf7f3; min-height: 0; }
-    .bk-label { font-size: 10.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c9a96e; margin-bottom: 18px; display: block; }
-    .bk-summary { background: white; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.9; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
-    .bk-input { width: 100%; padding: 11px 14px; border: 1px solid #e8e4df; border-radius: 10px; font-size: 16px; margin-bottom: 12px; font-family: inherit; outline: none; background: white; transition: border-color 0.2s; display: block; box-sizing: border-box; }
-    .bk-input:focus { border-color: #c9a96e; }
-    .bk-input::placeholder { font-size: 13px; color: #bbb; }
-    #booking-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: white; border-top: 1px solid #eee; flex-shrink: 0; }
-    .bk-back { background: none; border: none; color: #999; font-size: 14px; cursor: pointer; font-family: inherit; padding: 8px 0; transition: color 0.2s; }
-    .bk-back:hover { color: #555; }
-    .bk-next { background: #c9a96e; color: white; border: none; border-radius: 20px; padding: 10px 28px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
-    .bk-next:hover:not(:disabled) { background: #b8925a; }
-    .bk-next:disabled { background: #e0dbd4; color: #bbb; cursor: not-allowed; }
-    .bk-confirm-row { background: white; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 5px rgba(0,0,0,0.05); margin-bottom: 12px; }
-    .bk-confirm-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #bbb; margin-bottom: 6px; }
-    .bk-confirm-val { font-size: 14px; font-weight: 600; color: #2c2c2c; }
-    .bk-service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .bk-service-btn { background: white; border: 1.5px solid #e8e4df; border-radius: 12px; padding: 14px 12px; text-align: left; cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; flex-direction: column; }
-    .bk-service-btn:hover { border-color: #c9a96e; background: #fdf6f0; }
-    .bk-service-btn.bk-selected { border-color: #c9a96e; background: #fdf6f0; box-shadow: 0 0 0 1px #c9a96e; }
-    .bk-service-icon { font-size: 18px; margin-bottom: 6px; }
-    .bk-service-name { font-size: 12.5px; font-weight: 600; color: #2c2c2c; }
-    .bk-service-price { font-size: 11px; color: #c9a96e; margin-top: 3px; }
-
-    /* ── CHAT ATTENTION ARROWS ── */
-    .ca {
-      position: fixed;
-      z-index: 9996;
-      color: #ff3333;
-      font-size: 22px;
-      line-height: 1;
-      pointer-events: none;
-      text-shadow: 0 0 10px rgba(255,51,51,0.5);
-    }
-    /* Above bubble, pointing down */
-    .ca-top  { bottom: 104px; right: 46px;  animation: caDown   0.65s ease-in-out infinite alternate; }
-    /* Left of bubble, pointing right */
-    .ca-left { bottom: 48px;  right: 104px; animation: caRight  0.65s ease-in-out 0.18s infinite alternate; }
-    /* Top-left diagonal, pointing toward bubble */
-    .ca-tl   { bottom: 104px; right: 104px; animation: caDiagTL 0.65s ease-in-out 0.32s infinite alternate; }
-    /* Top-right diagonal, pointing toward bubble */
-    .ca-tr   { bottom: 104px; right: 20px;  animation: caDiagTR 0.65s ease-in-out 0.1s  infinite alternate; }
-
-    @keyframes caDown   { from{transform:translateY(-9px);opacity:.25} to{transform:translateY(0);opacity:1} }
-    @keyframes caRight  { from{transform:translateX(-9px);opacity:.25} to{transform:translateX(0);opacity:1} }
-    @keyframes caDiagTL { from{transform:translate(-7px,-7px);opacity:.25} to{transform:translate(0,0);opacity:1} }
-    @keyframes caDiagTR { from{transform:translate(7px,-7px);opacity:.25} to{transform:translate(0,0);opacity:1} }
-
-    @media (max-width: 600px) {
-      /* Chat full screen */
-      #chat-panel, #chat-panel.open, #chat-panel.expanded {
-        top: 0 !important; left: 0 !important;
-        right: 0 !important; bottom: 0 !important;
-        width: 100% !important;
-        height: 100dvh !important;
-        max-width: 100vw !important; max-height: 100dvh !important;
-        border-radius: 0 !important;
+      /* NAV */
+      nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 18px 48px; background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(8px); border-bottom: 1px solid #f0ebe4;
       }
-      #chat-bubble { bottom: 16px; right: 16px; }
+      .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; letter-spacing: 3px; color: #2c2c2c;
+  text-decoration: none; }
+      .nav-links { display: flex; gap: 32px; list-style: none; }
+      .nav-links a { text-decoration: none; color: #555; font-size: 0.85rem; letter-spacing: 1px; text-transform:
+  uppercase; transition: color 0.2s; }
+      .nav-links a:hover { color: #c9a96e; }
+      .nav-cta { background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 4px; font-size: 0.8rem;
+  letter-spacing: 1px; text-transform: uppercase; text-decoration: none; transition: background 0.2s; }
+      .nav-cta:hover { background: #c9a96e; }
 
-      /* Arrow positions adjusted for mobile bubble position */
-      .ca-top  { bottom: 96px; right: 38px; }
-      .ca-left { bottom: 40px; right: 96px; }
-      .ca-tl   { bottom: 96px; right: 96px; }
-      .ca-tr   { bottom: 96px; right: 12px; }
+      /* HERO */
+      .hero {
+        min-height: 100vh; display: flex; align-items: center;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 50%, #3d3020 100%);
+        position: relative; overflow: hidden;
+      }
+      .hero::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.15) 0%, transparent 60%);
+      }
+      .hero-content { max-width: 1100px; margin: 0 auto; padding: 120px 48px 80px; position: relative; }
+      .hero-tag { display: inline-block; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color:
+  #c9a96e; margin-bottom: 24px; }
+      .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 300; color:
+   white; line-height: 1.1; margin-bottom: 24px; }
+      .hero h1 em { font-style: italic; color: #c9a96e; }
+      .hero p { font-size: 1rem; color: #aaa; max-width: 480px; line-height: 1.7; margin-bottom: 40px; }
+      .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+      .btn-gold { background: #c9a96e; color: white; padding: 14px 32px; border: none; border-radius: 4px; font-size:
+  0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+      .btn-gold:hover { background: #b8925a; }
+      .btn-outline { background: transparent; color: white; padding: 14px 32px; border: 1px solid rgba(255,255,255,0.3);
+   border-radius: 4px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition:
+  all 0.2s; }
+      .btn-outline:hover { border-color: #c9a96e; color: #c9a96e; }
+      .hero-stats { display: flex; gap: 48px; margin-top: 64px; padding-top: 40px; border-top: 1px solid
+  rgba(255,255,255,0.1); }
+      .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: #c9a96e; }
+      .stat-label { font-size: 0.8rem; color: #777; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
-      /* Nav */
-      nav { padding: 14px 20px; }
-      .nav-links { display: none; }
-      .nav-cta { padding: 9px 16px; font-size: 0.75rem; }
+      /* SERVICES */
+      .services { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+      .section-tag { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #c9a96e; margin-bottom:
+  16px; }
+      .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: #2c2c2c;
+  margin-bottom: 48px; }
+      .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+      .service-card { background: #fdf6f0; border-radius: 12px; padding: 32px 24px; transition: transform 0.2s,
+  box-shadow 0.2s; }
+      .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+      .service-icon { font-size: 2rem; margin-bottom: 16px; }
+      .service-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: #2c2c2c; margin-bottom:
+  8px; }
+      .service-card p { font-size: 0.85rem; color: #777; line-height: 1.6; }
+      .service-price { margin-top: 16px; font-size: 0.9rem; font-weight: 500; color: #c9a96e; }
 
-      /* Hero */
-      .hero-content { padding: 100px 20px 60px; }
-      .hero h1 { font-size: 2.4rem; }
-      .hero p { font-size: 0.9rem; }
-      .hero-btns { flex-direction: column; }
-      .btn-gold, .btn-outline { width: 100%; text-align: center; }
-      .hero-stats { gap: 24px; flex-wrap: wrap; margin-top: 40px; }
+      /* WHY */
+      .why { background: #2c2c2c; padding: 100px 48px; }
+      .why-inner { max-width: 1100px; margin: 0 auto; }
+      .why .section-title { color: white; }
+      .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; margin-top:
+  48px; }
+      .why-item { border-left: 2px solid #c9a96e; padding-left: 24px; }
+      .why-item h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: white; margin-bottom: 10px; }
+      .why-item p { font-size: 0.85rem; color: #888; line-height: 1.7; }
 
-      /* Sections */
-      .services { padding: 60px 20px; }
-      .why { padding: 60px 20px; }
-      .reviews { padding: 60px 20px; }
-      .section-title { font-size: 2rem; }
+      /* REVIEWS */
+      .reviews { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+      .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top:
+   48px; }
+      .review-card { background: #fdf6f0; border-radius: 12px; padding: 28px; }
+      .review-stars { color: #c9a96e; font-size: 1rem; margin-bottom: 12px; }
+      .review-text { font-size: 0.9rem; color: #555; line-height: 1.7; margin-bottom: 16px; font-style: italic; }
+      .review-author { font-size: 0.8rem; font-weight: 500; color: #2c2c2c; }
 
-      /* Footer */
-      footer { padding: 32px 20px; }
-      .footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
-    }
-  </style>
-</head>
-<body>
+      /* FOOTER */
+      footer { background: #1a1a1a; padding: 48px; }
+      .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items:
+  center; flex-wrap: wrap; gap: 24px; }
+      .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; letter-spacing: 3px; color: white; }
+      .footer-info { font-size: 0.8rem; color: #666; line-height: 1.8; }
+      .footer-info a { color: #c9a96e; text-decoration: none; }
 
-  <!-- NAV -->
-  <nav>
-    <a class="nav-logo" href="#">DEMO ESTETIKA</a>
-    <ul class="nav-links">
-      <li><a href="#paslaugos">Paslaugos</a></li>
-      <li><a href="#apie">Apie mus</a></li>
-      <li><a href="#atsiliepimai">Atsiliepimai</a></li>
-    </ul>
-    <a class="nav-cta" href="#" onclick="toggleChat(); return false;">Registruotis</a>
-  </nav>
+      /* ========== CHAT WIDGET ========== */
+      #chat-bubble {
+        position: fixed; bottom: 24px; right: 24px;
+        width: 64px; height: 64px; border-radius: 50%;
+        background: #c9a96e; color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        z-index: 9998; transition: transform 0.2s;
+        font-family: -apple-system, sans-serif;
+        animation: bubbleIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) 0.4s both;
+      }
+      @keyframes bubbleIn {
+        from { opacity: 0; transform: scale(0.4); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      #chat-bubble:hover { transform: scale(1.08); background: #b8925a; }
+      #chat-bubble svg { width: 28px; height: 28px; }
+      #chat-tooltip {
+        position: fixed; bottom: 104px; right: 24px;
+        background: #2c2c2c; color: #f0ebe4; font-size: 12.5px;
+        font-weight: 400; letter-spacing: 0.2px;
+        line-height: 1.5; padding: 10px 16px; border-radius: 20px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+        white-space: nowrap; text-align: center;
+        z-index: 9997; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        animation: fadeInUp 0.5s ease 1.2s both;
+      }
+      #chat-tooltip::after {
+        content: ''; position: absolute; bottom: -6px; right: 28px;
+        width: 0; height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #2c2c2c;
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      #chat-bubble .pulse {
+        position: absolute; top: -6px; right: -6px;
+        background: #ff4444; color: white; font-size: 11px;
+        width: 22px; height: 22px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold; font-family: -apple-system, sans-serif;
+      }
+      #chat-panel {
+        position: fixed; bottom: 100px; right: 24px;
+        width: 380px; max-width: calc(100vw - 32px);
+        height: 580px; max-height: calc(100vh - 120px);
+        background: white; border-radius: 16px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+        display: none; flex-direction: column;
+        z-index: 9999; overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        transition: height 0.35s ease, width 0.35s ease, bottom 0.35s ease;
+      }
+      #chat-panel.open {
+        display: flex;
+        animation: panelIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      @keyframes panelIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      #chat-panel.expanded {
+        height: calc(100vh - 40px);
+        bottom: 20px;
+        width: 420px;
+      }
+      #chat-header {
+        background: #2c2c2c; color: white; padding: 16px 20px;
+        display: flex; align-items: center; justify-content: space-between;
+        flex-shrink: 0;
+      }
+      #chat-header .clinic-name { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 16px;
+  letter-spacing: 2px; text-transform: uppercase; }
+      #chat-header .clinic-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+      #chat-header-line { height: 2px; background: linear-gradient(90deg, #c9a96e 0%, rgba(201,169,110,0.15) 100%);
+  flex-shrink: 0; }
+      #chat-step { font-size: 14px; color: rgba(255,255,255,0.75); letter-spacing: 1px; display: none; }
+      #chat-close { background: none; border: none; color: white; cursor: pointer; font-size: 22px; padding: 0; width:
+  auto; }
+      #chat-restart:hover { color: #c9a96e !important; }
+      #chat-messages {
+        flex: 1; overflow-y: auto; padding: 16px;
+        background: #faf7f3; display: flex; flex-direction: column; gap: 10px;
+      }
+      .msg { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-wrap:
+  break-word; animation: msgIn 0.25s ease both; }
+      @keyframes msgIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .msg.ai { background: white; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0
+  1px 3px rgba(0,0,0,0.07); }
+      .msg.ai a { color: #c9a96e; font-weight: 600; }
+      .msg.user { background: #c9a96e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+      .book-card, .contact-card, .slots-card, .confirm-card, .pre-confirm-card {
+        align-self: flex-start; background: white;
+        border: 1.5px solid #c9a96e; border-radius: 14px; border-bottom-left-radius: 4px;
+        padding: 14px 16px; max-width: 90%; box-shadow: 0 1px 3px rgba(0,0,0,0.07); width: 100%;
+        animation: msgIn 0.25s ease both;
+      }
+      .book-card p, .contact-card p, .slots-card p, .confirm-card p, .pre-confirm-card p {
+        font-size: 13px; color: #666; margin-bottom: 10px; line-height: 1.4;
+      }
+      .book-card button {
+        width: 100%; padding: 11px; background: #c9a96e; color: white;
+        border: none; border-radius: 8px; font-size: 14px;
+        cursor: pointer; font-weight: 600; letter-spacing: 0.5px;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+      }
+      .book-card button:hover { background: #b8925a; }
+      .book-card button svg { width: 16px; height: 16px; flex-shrink: 0; }
+      .contact-card input {
+        width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
+        font-size: 16px; margin-bottom: 8px; font-family: inherit; outline: none;
+      }
+      .contact-card input:focus { border-color: #c9a96e; }
+      .contact-card input::placeholder { font-size: 13px; color: #aaa; }
+      .contact-card button {
+        width: 100%; padding: 10px; background: #c9a96e; color: white;
+        border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+      }
+      .contact-card button:hover { background: #b8925a; }
+      .slot-btn {
+        padding: 8px 4px; background: #fdf6f0; border: 1.5px solid #c9a96e;
+        border-radius: 8px; font-size: 13px; font-weight: 600; color: #c9a96e;
+        cursor: pointer; transition: all 0.15s; text-align: center;
+      }
+      .slot-btn:hover { background: #c9a96e; color: white; }
+      .slot-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+      /* Calendar */
+      .cal-header { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: #2c2c2c; text-align:
+  center; margin-bottom: 10px; }
+      .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+      .cal-dow { text-align: center; font-size: 10px; font-weight: 600; color: #bbb; text-transform: uppercase; padding:
+   3px 0 5px; }
+      .cal-day { text-align: center; font-size: 13px; padding: 6px 2px; border-radius: 7px; line-height: 1; }
+      .cal-available { background: #fdf6f0; border: 1.5px solid #c9a96e; color: #c9a96e; cursor: pointer; font-weight:
+  600; transition: all 0.15s; }
+      .cal-available:hover { background: #c9a96e; color: white; }
+      .cal-selected { background: #c9a96e !important; color: white !important; }
+      .cal-unavailable, .cal-past { color: #ddd; }
+      .cal-empty {}
+      .cal-times { margin-top: 12px; border-top: 1px solid #f0ebe4; padding-top: 10px; }
+      .cal-time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .confirm-card {
+        align-self: flex-start; width: 100%; background: white;
+        border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+        padding: 20px 18px; text-align: center; animation: msgIn 0.25s ease both;
+      }
+      .confirm-card .confirm-icon {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: linear-gradient(135deg, #c9a96e, #b8925a);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; margin: 0 auto 14px; color: white;
+        box-shadow: 0 4px 12px rgba(201,169,110,0.35);
+      }
+      .confirm-card .confirm-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+      .confirm-card .confirm-row {
+        display: flex; align-items: center; gap: 10px;
+        background: #faf7f3; border-radius: 10px; padding: 10px 12px;
+        margin-bottom: 8px; text-align: left;
+      }
+      .confirm-card .confirm-row-icon { font-size: 16px; flex-shrink: 0; }
+      .confirm-card .confirm-row-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform:
+  uppercase; color: #bbb; }
+      .confirm-card .confirm-row-val { font-size: 13px; font-weight: 600; color: #2c2c2c; margin-top: 1px; }
+      .confirm-card .confirm-email { font-size: 12px; color: #aaa; margin: 10px 0 14px; line-height: 1.5; }
+      .confirm-card .edit-btn {
+        width: 100%; padding: 10px; background: transparent;
+        border: 1.5px solid #e8e4df; border-radius: 10px;
+        color: #999; font-size: 13px; cursor: pointer; font-family: inherit;
+        transition: all 0.15s;
+      }
+      .confirm-card .edit-btn:hover { border-color: #c9a96e; color: #c9a96e; }
+      .confirm-card .edit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      .typing { display: flex; gap: 4px; padding: 12px 14px; background: white; border-radius: 14px; align-self:
+  flex-start; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+      .typing span { width: 7px; height: 7px; background: #c9a96e; border-radius: 50%; animation: bounce 1.4s infinite
+  ease-in-out; }
+      .typing span:nth-child(2) { animation-delay: 0.2s; }
+      .typing span:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:.5;}40%{transform:scale(1);opacity:1;} }
+      #chat-input-wrap {
+        padding: 12px; background: white; border-top: 1px solid #eee;
+        display: flex; gap: 8px; flex-shrink: 0;
+      }
+      #chat-input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 20px; font-size: 16px; margin:
+  0; outline: none; font-family: inherit; }
+      #chat-input:focus { border-color: #c9a96e; }
+      #chat-send { width: auto; padding: 0 18px; background: #c9a96e; color: white; border: none; border-radius: 20px;
+  cursor: pointer; font-size: 14px; font-weight: 600; }
+      #chat-send:disabled { background: #ccc; cursor: not-allowed; }
+      #chat-footer { text-align: center; padding: 8px; font-size: 11px; color: #bbb; background: white; flex-shrink: 0;
+  }
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <span class="hero-tag">Estetinė medicina · Vilnius</span>
-      <h1>Jūsų grožis —<br>mūsų <em>menas</em></h1>
-      <p>Profesionalios estetinės procedūros modernioje klinikoje Vilniaus centre. Botox, filleriai, lazerinė epiliacija ir veido priežiūra.</p>
-      <div class="hero-btns">
-        <button class="btn-gold" onclick="toggleChat()">Registruotis vizitui</button>
-        <button class="btn-outline" onclick="document.getElementById('paslaugos').scrollIntoView({behavior:'smooth'})">Peržiūrėti paslaugas</button>
-      </div>
-      <div class="hero-stats">
-        <div><div class="stat-num">8+</div><div class="stat-label">Metų patirtis</div></div>
-        <div><div class="stat-num">2400+</div><div class="stat-label">Patenkintų klientų</div></div>
-        <div><div class="stat-num">15+</div><div class="stat-label">Procedūrų rūšių</div></div>
-      </div>
-    </div>
-  </section>
+      /* ── BOOKING WIZARD ── */
+      #booking-wizard { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
+      #booking-wizard.active { display: flex; }
+      #booking-step-content { flex: 1; overflow-y: auto; padding: 20px 16px 24px; background: #faf7f3; min-height: 0; }
+      .bk-label { font-size: 10.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #c9a96e;
+  margin-bottom: 18px; display: block; }
+      .bk-summary { background: white; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #666;
+  margin-bottom: 16px; line-height: 1.9; box-shadow: 0 1px 5px rgba(0,0,0,0.05); }
+      .bk-input { width: 100%; padding: 11px 14px; border: 1px solid #e8e4df; border-radius: 10px; font-size: 16px;
+  margin-bottom: 12px; font-family: inherit; outline: none; background: white; transition: border-color 0.2s; display:
+  block; box-sizing: border-box; }
+      .bk-input:focus { border-color: #c9a96e; }
+      .bk-input::placeholder { font-size: 13px; color: #bbb; }
+      #booking-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background:
+   white; border-top: 1px solid #eee; flex-shrink: 0; }
+      .bk-back { background: none; border: none; color: #999; font-size: 14px; cursor: pointer; font-family: inherit;
+  padding: 8px 0; transition: color 0.2s; }
+      .bk-back:hover { color: #555; }
+      .bk-next { background: #c9a96e; color: white; border: none; border-radius: 20px; padding: 10px 28px; font-size:
+  14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+      .bk-next:hover:not(:disabled) { background: #b8925a; }
+      .bk-next:disabled { background: #e0dbd4; color: #bbb; cursor: not-allowed; }
+      .bk-confirm-row { background: white; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 5px
+  rgba(0,0,0,0.05); margin-bottom: 12px; }
+      .bk-confirm-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color:
+  #bbb; margin-bottom: 6px; }
+      .bk-confirm-val { font-size: 14px; font-weight: 600; color: #2c2c2c; }
+      .bk-service-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .bk-service-btn { background: white; border: 1.5px solid #e8e4df; border-radius: 12px; padding: 14px 12px;
+  text-align: left; cursor: pointer; transition: all 0.15s; font-family: inherit; display: flex; flex-direction: column;
+   }
+      .bk-service-btn:hover { border-color: #c9a96e; background: #fdf6f0; }
+      .bk-service-btn.bk-selected { border-color: #c9a96e; background: #fdf6f0; box-shadow: 0 0 0 1px #c9a96e; }
+      .bk-service-icon { font-size: 18px; margin-bottom: 6px; }
+      .bk-service-name { font-size: 12.5px; font-weight: 600; color: #2c2c2c; }
+      .bk-service-price { font-size: 11px; color: #c9a96e; margin-top: 3px; }
 
-  <!-- SERVICES -->
-  <section class="services" id="paslaugos">
-    <div class="section-tag">Paslaugos</div>
-    <h2 class="section-title">Procedūros jūsų grožiui</h2>
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">💉</div>
-        <h3>Botox</h3>
-        <p>Mimikos raukšlių korekcija botulino toksinu. Greitas rezultatas, natūrali išvaizda.</p>
-        <div class="service-price">nuo €120</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">✨</div>
-        <h3>Lip filleriai</h3>
-        <p>Lūpų apimties didinimas ir formavimas hialurono rūgšties preparatais.</p>
-        <div class="service-price">nuo €250</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🔆</div>
-        <h3>Lazerinė epiliacija</h3>
-        <p>Ilgalaikis plaukų šalinimas modernia lazerine technologija. Visoms odos tipams.</p>
-        <div class="service-price">nuo €60 / seansas</div>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🌿</div>
-        <h3>Veido valymas</h3>
-        <p>Giluminis veido valymas ir priežiūra. Odos atjauninimas, porų valymas.</p>
-        <div class="service-price">nuo €70</div>
-      </div>
-    </div>
-  </section>
+      @media (max-width: 600px) {
+        /* Chat full screen */
+        #chat-panel, #chat-panel.open, #chat-panel.expanded {
+          top: 0 !important; left: 0 !important;
+          right: 0 !important; bottom: 0 !important;
+          width: 100% !important;
+          height: 100dvh !important;
+          max-width: 100vw !important; max-height: 100dvh !important;
+          border-radius: 0 !important;
+        }
+        #chat-bubble { bottom: 16px; right: 16px; }
 
-  <!-- WHY -->
-  <section class="why" id="apie">
-    <div class="why-inner">
-      <div class="section-tag">Kodėl mes</div>
-      <h2 class="section-title">Aukšti standartai,<br>matomi rezultatai</h2>
-      <div class="why-grid">
-        <div class="why-item">
-          <h4>Sertifikuoti specialistai</h4>
-          <p>Visi mūsų specialistai turi medicininį išsilavinimą ir nuolat tobulina kvalifikaciją tarptautiniuose kursuose.</p>
+        /* Nav */
+        nav { padding: 14px 20px; }
+        .nav-links { display: none; }
+        .nav-cta { padding: 9px 16px; font-size: 0.75rem; }
+
+        /* Hero */
+        .hero-content { padding: 100px 20px 60px; }
+        .hero h1 { font-size: 2.4rem; }
+        .hero p { font-size: 0.9rem; }
+        .hero-btns { flex-direction: column; }
+        .btn-gold, .btn-outline { width: 100%; text-align: center; }
+        .hero-stats { gap: 24px; flex-wrap: wrap; margin-top: 40px; }
+
+        /* Sections */
+        .services { padding: 60px 20px; }
+        .why { padding: 60px 20px; }
+        .reviews { padding: 60px 20px; }
+        .section-title { font-size: 2rem; }
+
+        /* Footer */
+        footer { padding: 32px 20px; }
+        .footer-inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- NAV -->
+    <nav>
+      <a class="nav-logo" href="#">DEMO ESTETIKA</a>
+      <ul class="nav-links">
+        <li><a href="#paslaugos">Paslaugos</a></li>
+        <li><a href="#apie">Apie mus</a></li>
+        <li><a href="#atsiliepimai">Atsiliepimai</a></li>
+      </ul>
+      <a class="nav-cta" href="#" onclick="toggleChat(); return false;">Registruotis</a>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-tag">Estetinė medicina · Vilnius</span>
+        <h1>Jūsų grožis —<br>mūsų <em>menas</em></h1>
+        <p>Profesionalios estetinės procedūros modernioje klinikoje Vilniaus centre. Botox, filleriai, lazerinė
+  epiliacija ir veido priežiūra.</p>
+        <div class="hero-btns">
+          <button class="btn-gold" onclick="toggleChat()">Registruotis vizitui</button>
+          <button class="btn-outline"
+  onclick="document.getElementById('paslaugos').scrollIntoView({behavior:'smooth'})">Peržiūrėti paslaugas</button>
         </div>
-        <div class="why-item">
-          <h4>Individualus požiūris</h4>
-          <p>Kiekvienam klientui sudarome individualų procedūrų planą, atsižvelgiant į jo poreikius ir odos būklę.</p>
-        </div>
-        <div class="why-item">
-          <h4>Modernia įranga</h4>
-          <p>Naudojame tik sertifikuotus preparatus ir pažangiausią medicininę įrangą iš Europos gamintojų.</p>
+        <div class="hero-stats">
+          <div><div class="stat-num">8+</div><div class="stat-label">Metų patirtis</div></div>
+          <div><div class="stat-num">2400+</div><div class="stat-label">Patenkintų klientų</div></div>
+          <div><div class="stat-num">15+</div><div class="stat-label">Procedūrų rūšių</div></div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- REVIEWS -->
-  <section class="reviews" id="atsiliepimai">
-    <div class="section-tag">Atsiliepimai</div>
-    <h2 class="section-title">Ką sako mūsų klientai</h2>
-    <div class="reviews-grid">
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Puiki klinika! Specialistė labai profesionali, paaiškino viską prieš procedūrą. Rezultatas natūralus ir man labai patinka."</p>
-        <div class="review-author">Rūta M. — Botox</div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Lankiausi dėl lip fillerių. Esu labai patenkinta — lūpos atrodo natūraliai ir gražiai, be perdėtumo. Tikrai rekomenduoju!"</p>
-        <div class="review-author">Gabija T. — Lip filleriai</div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Lazerinė epiliacija — geriausia investicija! Po 6 seansų rezultatas puikus. Klinika švari, personalas draugiškas."</p>
-        <div class="review-author">Indrė K. — Lazerinė epiliacija</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo">DEMO ESTETIKA</div>
-      <div class="footer-info">
-        Gedimino pr. 12, Vilnius &nbsp;·&nbsp; <a href="tel:+37060000000">+370 600 00000</a><br>
-        I–V 10:00–19:00 &nbsp;·&nbsp; VI 10:00–15:00
-      </div>
-    </div>
-  </footer>
-
-  <!-- ========== CHAT WIDGET ========== -->
-  <div id="chat-bubble" onclick="toggleChat()">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-    <div class="pulse" id="chat-badge">1</div>
-  </div>
-
-  <!-- 4 red attention arrows pointing at the chat bubble -->
-  <div id="chat-arrows" aria-hidden="true">
-    <span class="ca ca-top">▼</span>
-    <span class="ca ca-left">►</span>
-    <span class="ca ca-tl">↘</span>
-    <span class="ca ca-tr">↙</span>
-  </div>
-
-  <div id="chat-panel">
-    <div id="chat-header">
-      <div>
-        <div class="clinic-name">DEMO ESTETIKA</div>
-        <div class="clinic-sub">Asistentė</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <span id="chat-step"></span>
-        <button id="chat-restart" onclick="restartChat()" title="Pradėti iš naujo" style="background:none;border:none;color:white;cursor:pointer;padding:4px;display:flex;align-items:center;transition:color 0.2s;font-size:18px;line-height:1">↺</button>
-        <button id="chat-close" onclick="toggleChat()">×</button>
-      </div>
-    </div>
-    <div id="chat-header-line"></div>
-    <div id="chat-messages"></div>
-    <div id="chat-input-wrap">
-      <input type="text" id="chat-input" placeholder="Užduokite klausimą...">
-      <button id="chat-send" onclick="sendMessage()">Siųsti</button>
-    </div>
-    <div id="chat-footer"></div>
-    <div id="booking-wizard">
-      <div id="booking-step-content"></div>
-      <div id="booking-nav">
-        <button class="bk-back" id="booking-back" onclick="bookingBack()">← Atgal</button>
-        <button class="bk-next" id="booking-next" onclick="bookingNext()">Toliau →</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const API = 'https://project-zk9l5.vercel.app/api/chat';
-    const CLINIC_ID = 'demo-estetika';
-    function apiUrl(params) {
-      return API + '?' + new URLSearchParams({ ...params, clinicId: CLINIC_ID }).toString();
-    }
-    const BOOKING_KEYWORDS = ['užsiregistruoti','registruotis','registracija','rezervuoti',
-      'rezervacija','užsisakyti','kada galima','laisvas laikas','vizitas','apsilankyti',
-      'book','booking','appointment'];
-    const LT_DAYS = ['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis',
-      'Ketvirtadienis','Penktadienis','Šeštadienis'];
-    const LT_MONTHS = ['Sausis','Vasaris','Kovas','Balandis','Gegužė','Birželis','Liepa','Rugpjūtis','Rugsėjis','Spalis','Lapkritis','Gruodis'];
-    const SERVICES = [
-      { name:'Botox',            price:'nuo €120',      icon:'💉' },
-      { name:'Lip filleriai',    price:'nuo €250',      icon:'✨' },
-      { name:'Skruostų filleriai',price:'nuo €350',     icon:'✨' },
-      { name:'Lazerinė epiliacija',price:'nuo €60/seans.',icon:'🔆'},
-      { name:'Veido valymas',    price:'nuo €70',       icon:'🌿' },
-    ];
-
-    let chatOpened = false, bookingShown = false;
-    let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null;
-    let wizStep = 0, selectedSlot = null, selectedDay = null, allSlots = {};
-    let selectedService = null, slotsForService = null;
-
-    function setStep(n) {
-      wizStep = n;
-      const el = document.getElementById('chat-step');
-      if (!el) return;
-      if (n > 0) { el.textContent = n + ' / 4'; el.style.display = 'block'; }
-      else { el.textContent = ''; el.style.display = 'none'; }
-    }
-
-    function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
-    function msgs() { return document.getElementById('chat-messages'); }
-    function scrollBottom() { msgs().scrollTop = msgs().scrollHeight; }
-
-    // ── WIZARD SHOW / HIDE ──────────────────────────────────────────────────
-    function showWizard() {
-      document.getElementById('chat-messages').style.display = 'none';
-      document.getElementById('chat-input-wrap').style.display = 'none';
-      document.getElementById('chat-footer').style.display = 'none';
-      document.getElementById('booking-wizard').classList.add('active');
-    }
-    function hideWizard() {
-      document.getElementById('chat-messages').style.display = '';
-      document.getElementById('chat-input-wrap').style.display = '';
-      document.getElementById('chat-footer').style.display = '';
-      document.getElementById('booking-wizard').classList.remove('active');
-      document.getElementById('chat-panel').classList.remove('expanded');
-    }
-
-    // ── WIZARD STEP RENDERING ───────────────────────────────────────────────
-    function renderStep(n) {
-      setStep(n);
-      const content = document.getElementById('booking-step-content');
-      const backBtn = document.getElementById('booking-back');
-      const nextBtn = document.getElementById('booking-next');
-      backBtn.style.visibility = 'visible';
-      backBtn.disabled = false;
-      if (n === 1) {
-        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = false;
-        content.innerHTML = `
-          <span class="bk-label">Jūsų kontaktai</span>
-          <input class="bk-input" type="text" id="book-name-wiz" placeholder="Vardas Pavardė" value="${bookName.replace(/"/g,'&quot;')}">
-          <input class="bk-input" type="email" id="book-email-wiz" placeholder="el.pastas@gmail.com" value="${bookEmail.replace(/"/g,'&quot;')}">
-        `;
-        setTimeout(() => document.getElementById('book-name-wiz')?.focus(), 80);
-        document.getElementById('book-name-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') document.getElementById('book-email-wiz')?.focus(); });
-        document.getElementById('book-email-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter') bookingNext(); });
-      } else if (n === 2) {
-        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedService;
-        content.innerHTML = `
-          <span class="bk-label">Pasirinkite paslaugą</span>
-          <div class="bk-service-grid">
-            ${SERVICES.map((s,i) => `
-              <button class="bk-service-btn${selectedService?.name===s.name?' bk-selected':''}" onclick="selectServiceWiz(${i},this)">
-                <span class="bk-service-icon">${s.icon}</span>
-                <span class="bk-service-name">${s.name}</span>
-                <span class="bk-service-price">${s.price}</span>
-              </button>`).join('')}
-          </div>
-        `;
-      } else if (n === 3) {
-        nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedSlot;
-        renderCalendarStep(content);
-      } else if (n === 4) {
-        nextBtn.textContent = 'Patvirtinti ✓'; nextBtn.disabled = false;
-        content.innerHTML = `
-          <span class="bk-label">Patvirtinkite vizitą</span>
-          <div class="bk-confirm-row">
-            <div class="bk-confirm-label">Paslauga</div>
-            <div class="bk-confirm-val">${selectedService?.icon} ${selectedService?.name}</div>
-            <div style="font-size:12px;color:#c9a96e;margin-top:2px">${selectedService?.price}</div>
-          </div>
-          <div class="bk-confirm-row">
-            <div class="bk-confirm-label">Kontaktai</div>
-            <div class="bk-confirm-val">👤 ${bookName}</div>
-            <div style="font-size:13px;color:#777;margin-top:3px">✉️ ${bookEmail}</div>
-          </div>
-          <div class="bk-confirm-row">
-            <div class="bk-confirm-label">Vizito laikas</div>
-            <div class="bk-confirm-val">📅 ${selectedSlot?.label || ''}</div>
-          </div>
-          <p style="font-size:12px;color:#aaa;line-height:1.6;margin-top:4px">Patvirtinus, patvirtinimo laiškas bus išsiųstas nurodytu el. paštu.</p>
-        `;
-      }
-    }
-
-    function selectServiceWiz(idx, el) {
-      document.querySelectorAll('.bk-service-btn').forEach(b => b.classList.remove('bk-selected'));
-      el.classList.add('bk-selected');
-      const prev = selectedService?.name;
-      selectedService = SERVICES[idx];
-      if (prev !== selectedService.name) { selectedSlot = null; selectedDay = null; slotsForService = null; }
-      document.getElementById('booking-next').disabled = false;
-    }
-
-    function renderCalendarStep(content) {
-      const availableDays = new Set(
-        Object.keys(allSlots).filter(d => allSlots[d].some(s => { const m=new Date(s.time).getMinutes(); return m===0||m===30; }))
-      );
-      if (!availableDays.size) {
-        content.innerHTML = '<span class="bk-label">Pasirinkite datą</span><p style="color:#999;font-size:13px">Šiuo metu laisvų laikų nėra.</p>';
-        return;
-      }
-      const firstAvail = new Date([...availableDays].sort()[0]+'T12:00:00Z');
-      const year = firstAvail.getUTCFullYear(), month = firstAvail.getUTCMonth();
-      const daysInMonth = new Date(Date.UTC(year,month+1,0)).getUTCDate();
-      const firstDow = (new Date(Date.UTC(year,month,1)).getUTCDay()+6)%7;
-      const todayStr = new Date().toISOString().slice(0,10);
-      const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
-      let html = `<span class="bk-label">Pasirinkite datą</span>
-        <div class="bk-summary">
-          <div>${selectedService?.icon} <strong>${selectedService?.name}</strong> <span style="color:#c9a96e;font-size:11px">${selectedService?.price}</span></div>
-          <div style="margin-top:6px;padding-top:6px;border-top:1px solid #f0ebe4">👤 ${bookName} &nbsp;·&nbsp; <span style="color:#999">✉️ ${bookEmail}</span></div>
+    <!-- SERVICES -->
+    <section class="services" id="paslaugos">
+      <div class="section-tag">Paslaugos</div>
+      <h2 class="section-title">Procedūros jūsų grožiui</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">💉</div>
+          <h3>Botox</h3>
+          <p>Mimikos raukšlių korekcija botulino toksinu. Greitas rezultatas, natūrali išvaizda.</p>
+          <div class="service-price">nuo €120</div>
         </div>
-        <div class="cal-header">${LT_MONTHS[month]} ${year}</div><div class="cal-grid">`;
-      for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
-      for (let i=0;i<firstDow;i++) html += `<div class="cal-day cal-empty"></div>`;
-      for (let d=1;d<=daysInMonth;d++) {
-        const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if (ds<todayStr||!availableDays.has(ds))
-          html+=`<div class="cal-day ${ds<todayStr?'cal-past':'cal-unavailable'}">${d}</div>`;
-        else
-          html+=`<div class="cal-day cal-available${selectedDay===ds?' cal-selected':''}" data-day="${ds}" onclick="selectDayWiz('${ds}',this)">${d}</div>`;
+        <div class="service-card">
+          <div class="service-icon">✨</div>
+          <h3>Lip filleriai</h3>
+          <p>Lūpų apimties didinimas ir formavimas hialurono rūgšties preparatais.</p>
+          <div class="service-price">nuo €250</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔆</div>
+          <h3>Lazerinė epiliacija</h3>
+          <p>Ilgalaikis plaukų šalinimas modernia lazerine technologija. Visoms odos tipams.</p>
+          <div class="service-price">nuo €60 / seansas</div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🌿</div>
+          <h3>Veido valymas</h3>
+          <p>Giluminis veido valymas ir priežiūra. Odos atjauninimas, porų valymas.</p>
+          <div class="service-price">nuo €70</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY -->
+    <section class="why" id="apie">
+      <div class="why-inner">
+        <div class="section-tag">Kodėl mes</div>
+        <h2 class="section-title">Aukšti standartai,<br>matomi rezultatai</h2>
+        <div class="why-grid">
+          <div class="why-item">
+            <h4>Sertifikuoti specialistai</h4>
+            <p>Visi mūsų specialistai turi medicininį išsilavinimą ir nuolat tobulina kvalifikaciją tarptautiniuose
+  kursuose.</p>
+          </div>
+          <div class="why-item">
+            <h4>Individualus požiūris</h4>
+            <p>Kiekvienam klientui sudarome individualų procedūrų planą, atsižvelgiant į jo poreikius ir odos būklę.</p>
+          </div>
+          <div class="why-item">
+            <h4>Modernia įranga</h4>
+            <p>Naudojame tik sertifikuotus preparatus ir pažangiausią medicininę įrangą iš Europos gamintojų.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="reviews" id="atsiliepimai">
+      <div class="section-tag">Atsiliepimai</div>
+      <h2 class="section-title">Ką sako mūsų klientai</h2>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Puiki klinika! Specialistė labai profesionali, paaiškino viską prieš procedūrą.
+  Rezultatas natūralus ir man labai patinka."</p>
+          <div class="review-author">Rūta M. — Botox</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Lankiausi dėl lip fillerių. Esu labai patenkinta — lūpos atrodo natūraliai ir gražiai,
+   be perdėtumo. Tikrai rekomenduoju!"</p>
+          <div class="review-author">Gabija T. — Lip filleriai</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"Lazerinė epiliacija — geriausia investicija! Po 6 seansų rezultatas puikus. Klinika
+  švari, personalas draugiškas."</p>
+          <div class="review-author">Indrė K. — Lazerinė epiliacija</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-logo">DEMO ESTETIKA</div>
+        <div class="footer-info">
+          Gedimino pr. 12, Vilnius &nbsp;·&nbsp; <a href="tel:+37060000000">+370 600 00000</a><br>
+          I–V 10:00–19:00 &nbsp;·&nbsp; VI 10:00–15:00
+        </div>
+      </div>
+    </footer>
+
+    <!-- ========== CHAT WIDGET ========== -->
+    <div id="chat-bubble" onclick="toggleChat()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2
+  2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      <div class="pulse" id="chat-badge">1</div>
+    </div>
+
+    <div id="chat-panel">
+      <div id="chat-header">
+        <div>
+          <div class="clinic-name">DEMO ESTETIKA</div>
+          <div class="clinic-sub">Asistentė</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span id="chat-step"></span>
+          <button id="chat-restart" onclick="restartChat()" title="Pradėti iš naujo" style="background:none;border:none;
+  color:white;cursor:pointer;padding:4px;display:flex;align-items:center;transition:color
+  0.2s;font-size:18px;line-height:1">↺</button>
+          <button id="chat-close" onclick="toggleChat()">×</button>
+        </div>
+      </div>
+      <div id="chat-header-line"></div>
+      <div id="chat-messages"></div>
+      <div id="chat-input-wrap">
+        <input type="text" id="chat-input" placeholder="Užduokite klausimą...">
+        <button id="chat-send" onclick="sendMessage()">Siųsti</button>
+      </div>
+      <div id="chat-footer"></div>
+      <div id="booking-wizard">
+        <div id="booking-step-content"></div>
+        <div id="booking-nav">
+          <button class="bk-back" id="booking-back" onclick="bookingBack()">← Atgal</button>
+          <button class="bk-next" id="booking-next" onclick="bookingNext()">Toliau →</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = 'https://project-zk9l5.vercel.app/api/chat';
+      const CLINIC_ID = 'demo-estetika';
+      function apiUrl(params) {
+        return API + '?' + new URLSearchParams({ ...params, clinicId: CLINIC_ID }).toString();
       }
-      html+=`</div><div id="cal-times-wiz" class="cal-times"></div>`;
-      content.innerHTML=html;
-      if (selectedDay && availableDays.has(selectedDay)) renderTimesWiz(selectedDay);
-    }
+      const BOOKING_KEYWORDS = ['užsiregistruoti','registruotis','registracija','rezervuoti',
+        'rezervacija','užsisakyti','kada galima','laisvas laikas','vizitas','apsilankyti',
+        'book','booking','appointment'];
+      const LT_DAYS = ['Sekmadienis','Pirmadienis','Antradienis','Trečiadienis',
+        'Ketvirtadienis','Penktadienis','Šeštadienis'];
+      const LT_MONTHS = ['Sausis','Vasaris','Kovas','Balandis','Gegužė','Birželis','Liepa','Rugpjūtis','Rugsėjis','Spali
+  s','Lapkritis','Gruodis'];
+      const SERVICES = [
+        { name:'Botox',            price:'nuo €120',      icon:'💉' },
+        { name:'Lip filleriai',    price:'nuo €250',      icon:'✨' },
+        { name:'Skruostų filleriai',price:'nuo €350',     icon:'✨' },
+        { name:'Lazerinė epiliacija',price:'nuo €60/seans.',icon:'🔆'},
+        { name:'Veido valymas',    price:'nuo €70',       icon:'🌿' },
+      ];
 
-    function selectDayWiz(dateStr, el) {
-      document.querySelectorAll('.cal-available').forEach(d=>d.classList.remove('cal-selected'));
-      el.classList.add('cal-selected');
-      if (selectedDay !== dateStr) { selectedDay=dateStr; selectedSlot=null; document.getElementById('booking-next').disabled=true; }
-      renderTimesWiz(dateStr);
-    }
+      let chatOpened = false, bookingShown = false;
+      let bookName = '', bookEmail = '', bookEventTypeId = null, bookingUid = null;
+      let wizStep = 0, selectedSlot = null, selectedDay = null, allSlots = {};
+      let selectedService = null, slotsForService = null;
 
-    function renderTimesWiz(dateStr) {
-      const timesEl=document.getElementById('cal-times-wiz');
-      if (!timesEl) return;
-      const daySlots=(allSlots[dateStr]||[]).filter(s=>{const m=new Date(s.time).getMinutes();return m===0||m===30;});
-      if (!daySlots.length){timesEl.innerHTML='<p style="font-size:12px;color:#999">Šią dieną laikų nėra.</p>';return;}
-      const d=new Date(dateStr+'T12:00:00Z');
-      const label=LT_DAYS[d.getUTCDay()]+', '+d.getUTCDate()+' '+LT_MONTHS[d.getUTCMonth()];
-      let html=`<p style="font-size:12px;font-weight:600;color:#999;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">${label}</p><div class="cal-time-grid">`;
-      for (const slot of daySlots) {
-        const t=new Date(slot.time);
-        const hhmm=t.toLocaleTimeString('lt-LT',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Vilnius'});
-        const isSel=selectedSlot&&selectedSlot.start===slot.time;
-        html+=`<button class="slot-btn${isSel?' cal-selected':''}" style="${isSel?'background:#c9a96e;color:white;':''}" onclick="selectSlotWiz('${slot.time}','${label}, ${hhmm}',this)">${hhmm}</button>`;
+      function setStep(n) {
+        wizStep = n;
+        const el = document.getElementById('chat-step');
+        if (!el) return;
+        if (n > 0) { el.textContent = n + ' / 4'; el.style.display = 'block'; }
+        else { el.textContent = ''; el.style.display = 'none'; }
       }
-      timesEl.innerHTML=html+'</div>';
-    }
 
-    function selectSlotWiz(start, label, el) {
-      document.querySelectorAll('.slot-btn').forEach(b=>{b.classList.remove('cal-selected');b.style.background='';b.style.color='';});
-      el.classList.add('cal-selected'); el.style.background='#c9a96e'; el.style.color='white';
-      selectedSlot={start,label};
-      document.getElementById('booking-next').disabled=false;
-    }
+      function hasBookingIntent(t) { return BOOKING_KEYWORDS.some(k => t.toLowerCase().includes(k)); }
+      function msgs() { return document.getElementById('chat-messages'); }
+      function scrollBottom() { msgs().scrollTop = msgs().scrollHeight; }
 
-    // ── WIZARD NAVIGATION ───────────────────────────────────────────────────
-    async function bookingNext() {
-      const nextBtn=document.getElementById('booking-next');
-      if (wizStep===1) {
-        const n=document.getElementById('book-name-wiz')?.value.trim();
-        const e=document.getElementById('book-email-wiz')?.value.trim();
-        if (!n||!e){alert('Įveskite vardą ir el. paštą');return;}
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert('Įveskite teisingą el. pašto adresą (pvz. vardas@gmail.com)');return;}
-        const contactChanged=n!==bookName||e!==bookEmail;
-        bookName=n; bookEmail=e;
-        if (contactChanged){selectedSlot=null;selectedDay=null;slotsForService=null;}
-        renderStep(2);
-      } else if (wizStep===2) {
-        if (!selectedService) return;
-        if (slotsForService===selectedService.name && Object.keys(allSlots).length>0) { renderStep(3); return; }
-        nextBtn.disabled=true; nextBtn.textContent='Kraunama...';
+      function showWizard() {
+        document.getElementById('chat-messages').style.display = 'none';
+        document.getElementById('chat-input-wrap').style.display = 'none';
+        document.getElementById('chat-footer').style.display = 'none';
+        document.getElementById('booking-wizard').classList.add('active');
+      }
+      function hideWizard() {
+        document.getElementById('chat-messages').style.display = '';
+        document.getElementById('chat-input-wrap').style.display = '';
+        document.getElementById('chat-footer').style.display = '';
+        document.getElementById('booking-wizard').classList.remove('active');
+        document.getElementById('chat-panel').classList.remove('expanded');
+      }
+
+      function renderStep(n) {
+        setStep(n);
+        const content = document.getElementById('booking-step-content');
+        const backBtn = document.getElementById('booking-back');
+        const nextBtn = document.getElementById('booking-next');
+        backBtn.style.visibility = 'visible';
+        backBtn.disabled = false;
+        if (n === 1) {
+          nextBtn.textContent = 'Toliau →'; nextBtn.disabled = false;
+          content.innerHTML = `
+            <span class="bk-label">Jūsų kontaktai</span>
+            <input class="bk-input" type="text" id="book-name-wiz" placeholder="Vardas Pavardė"
+  value="${bookName.replace(/"/g,'&quot;')}">
+            <input class="bk-input" type="email" id="book-email-wiz" placeholder="el.pastas@gmail.com"
+  value="${bookEmail.replace(/"/g,'&quot;')}">
+          `;
+          setTimeout(() => document.getElementById('book-name-wiz')?.focus(), 80);
+          document.getElementById('book-name-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter')
+  document.getElementById('book-email-wiz')?.focus(); });
+          document.getElementById('book-email-wiz')?.addEventListener('keypress', e => { if (e.key==='Enter')
+  bookingNext(); });
+        } else if (n === 2) {
+          nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedService;
+          content.innerHTML = `
+            <span class="bk-label">Pasirinkite paslaugą</span>
+            <div class="bk-service-grid">
+              ${SERVICES.map((s,i) => `
+                <button class="bk-service-btn${selectedService?.name===s.name?' bk-selected':''}"
+  onclick="selectServiceWiz(${i},this)">
+                  <span class="bk-service-icon">${s.icon}</span>
+                  <span class="bk-service-name">${s.name}</span>
+                  <span class="bk-service-price">${s.price}</span>
+                </button>`).join('')}
+            </div>
+          `;
+        } else if (n === 3) {
+          nextBtn.textContent = 'Toliau →'; nextBtn.disabled = !selectedSlot;
+          renderCalendarStep(content);
+        } else if (n === 4) {
+          nextBtn.textContent = 'Patvirtinti ✓'; nextBtn.disabled = false;
+          content.innerHTML = `
+            <span class="bk-label">Patvirtinkite vizitą</span>
+            <div class="bk-confirm-row">
+              <div class="bk-confirm-label">Paslauga</div>
+              <div class="bk-confirm-val">${selectedService?.icon} ${selectedService?.name}</div>
+              <div style="font-size:12px;color:#c9a96e;margin-top:2px">${selectedService?.price}</div>
+            </div>
+            <div class="bk-confirm-row">
+              <div class="bk-confirm-label">Kontaktai</div>
+              <div class="bk-confirm-val">👤 ${bookName}</div>
+              <div style="font-size:13px;color:#777;margin-top:3px">✉️ ${bookEmail}</div>
+            </div>
+            <div class="bk-confirm-row">
+              <div class="bk-confirm-label">Vizito laikas</div>
+              <div class="bk-confirm-val">📅 ${selectedSlot?.label || ''}</div>
+            </div>
+            <p style="font-size:12px;color:#aaa;line-height:1.6;margin-top:4px">Patvirtinus, patvirtinimo laiškas bus
+  išsiųstas nurodytu el. paštu.</p>
+          `;
+        }
+      }
+
+      function selectServiceWiz(idx, el) {
+        document.querySelectorAll('.bk-service-btn').forEach(b => b.classList.remove('bk-selected'));
+        el.classList.add('bk-selected');
+        const prev = selectedService?.name;
+        selectedService = SERVICES[idx];
+        if (prev !== selectedService.name) { selectedSlot = null; selectedDay = null; slotsForService = null; }
+        document.getElementById('booking-next').disabled = false;
+      }
+
+      function renderCalendarStep(content) {
+        const availableDays = new Set(
+          Object.keys(allSlots).filter(d => allSlots[d].some(s => { const m=new Date(s.time).getMinutes(); return
+  m===0||m===30; }))
+        );
+        if (!availableDays.size) {
+          content.innerHTML = '<span class="bk-label">Pasirinkite datą</span><p style="color:#999;font-size:13px">Šiuo
+  metu laisvų laikų nėra.</p>';
+          return;
+        }
+        const firstAvail = new Date([...availableDays].sort()[0]+'T12:00:00Z');
+        const year = firstAvail.getUTCFullYear(), month = firstAvail.getUTCMonth();
+        const daysInMonth = new Date(Date.UTC(year,month+1,0)).getUTCDate();
+        const firstDow = (new Date(Date.UTC(year,month,1)).getUTCDay()+6)%7;
+        const todayStr = new Date().toISOString().slice(0,10);
+        const DOW = ['Pr','An','Tr','Kt','Pn','Št','Sk'];
+        let html = `<span class="bk-label">Pasirinkite datą</span>
+          <div class="bk-summary">
+            <div>${selectedService?.icon} <strong>${selectedService?.name}</strong> <span
+  style="color:#c9a96e;font-size:11px">${selectedService?.price}</span></div>
+            <div style="margin-top:6px;padding-top:6px;border-top:1px solid #f0ebe4">👤 ${bookName} &nbsp;·&nbsp; <span
+  style="color:#999">✉️ ${bookEmail}</span></div>
+          </div>
+          <div class="cal-header">${LT_MONTHS[month]} ${year}</div><div class="cal-grid">`;
+        for (const h of DOW) html += `<div class="cal-dow">${h}</div>`;
+        for (let i=0;i<firstDow;i++) html += `<div class="cal-day cal-empty"></div>`;
+        for (let d=1;d<=daysInMonth;d++) {
+          const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          if (ds<todayStr||!availableDays.has(ds))
+            html+=`<div class="cal-day ${ds<todayStr?'cal-past':'cal-unavailable'}">${d}</div>`;
+          else
+            html+=`<div class="cal-day cal-available${selectedDay===ds?' cal-selected':''}" data-day="${ds}"
+  onclick="selectDayWiz('${ds}',this)">${d}</div>`;
+        }
+        html+=`</div><div id="cal-times-wiz" class="cal-times"></div>`;
+        content.innerHTML=html;
+        if (selectedDay && availableDays.has(selectedDay)) renderTimesWiz(selectedDay);
+      }
+
+      function selectDayWiz(dateStr, el) {
+        document.querySelectorAll('.cal-available').forEach(d=>d.classList.remove('cal-selected'));
+        el.classList.add('cal-selected');
+        if (selectedDay !== dateStr) { selectedDay=dateStr; selectedSlot=null;
+  document.getElementById('booking-next').disabled=true; }
+        renderTimesWiz(dateStr);
+      }
+
+      function renderTimesWiz(dateStr) {
+        const timesEl=document.getElementById('cal-times-wiz');
+        if (!timesEl) return;
+        const daySlots=(allSlots[dateStr]||[]).filter(s=>{const m=new Date(s.time).getMinutes();return m===0||m===30;});
+        if (!daySlots.length){timesEl.innerHTML='<p style="font-size:12px;color:#999">Šią dieną laikų
+  nėra.</p>';return;}
+        const d=new Date(dateStr+'T12:00:00Z');
+        const label=LT_DAYS[d.getUTCDay()]+', '+d.getUTCDate()+' '+LT_MONTHS[d.getUTCMonth()];
+        let html=`<p style="font-size:12px;font-weight:600;color:#999;margin-bottom:8px;text-transform:uppercase;letter-
+  spacing:0.5px">${label}</p><div class="cal-time-grid">`;
+        for (const slot of daySlots) {
+          const t=new Date(slot.time);
+          const hhmm=t.toLocaleTimeString('lt-LT',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Vilnius'});
+          const isSel=selectedSlot&&selectedSlot.start===slot.time;
+          html+=`<button class="slot-btn${isSel?' cal-selected':''}"
+  style="${isSel?'background:#c9a96e;color:white;':''}" onclick="selectSlotWiz('${slot.time}','${label},
+  ${hhmm}',this)">${hhmm}</button>`;
+        }
+        timesEl.innerHTML=html+'</div>';
+      }
+
+      function selectSlotWiz(start, label, el) {
+        document.querySelectorAll('.slot-btn').forEach(b=>{b.classList.remove('cal-selected');b.style.background='';b.st
+  yle.color='';});
+        el.classList.add('cal-selected'); el.style.background='#c9a96e'; el.style.color='white';
+        selectedSlot={start,label};
+        document.getElementById('booking-next').disabled=false;
+      }
+
+      async function bookingNext() {
+        const nextBtn=document.getElementById('booking-next');
+        if (wizStep===1) {
+          const n=document.getElementById('book-name-wiz')?.value.trim();
+          const e=document.getElementById('book-email-wiz')?.value.trim();
+          if (!n||!e){alert('Įveskite vardą ir el. paštą');return;}
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert('Įveskite teisingą el. pašto adresą (pvz.
+  vardas@gmail.com)');return;}
+          const contactChanged=n!==bookName||e!==bookEmail;
+          bookName=n; bookEmail=e;
+          if (contactChanged){selectedSlot=null;selectedDay=null;slotsForService=null;}
+          renderStep(2);
+        } else if (wizStep===2) {
+          if (!selectedService) return;
+          if (slotsForService===selectedService.name && Object.keys(allSlots).length>0) { renderStep(3); return; }
+          nextBtn.disabled=true; nextBtn.textContent='Kraunama...';
+          try {
+            const res=await fetch(apiUrl({action:'slots',service:selectedService.name}));
+            const data=await res.json();
+            if (data.error) throw new Error(data.error);
+            bookEventTypeId=data.eventTypeId; allSlots=data.slots; slotsForService=selectedService.name;
+            renderStep(3);
+          } catch {
+            nextBtn.disabled=false; nextBtn.textContent='Toliau →';
+            alert('Nepavyko gauti laisvų laikų. Bandykite vėliau.');
+          }
+        } else if (wizStep===3) {
+          if (!selectedSlot) return;
+          renderStep(4);
+        } else if (wizStep===4) {
+          await confirmBooking();
+        }
+      }
+
+      function bookingBack() {
+        if (wizStep===1) { hideWizard(); setStep(0); }
+        else if (wizStep===2) renderStep(1);
+        else if (wizStep===3) renderStep(2);
+        else if (wizStep===4) renderStep(3);
+      }
+
+      async function confirmBooking() {
+        const nextBtn=document.getElementById('booking-next');
+        const backBtn=document.getElementById('booking-back');
+        nextBtn.disabled=true; nextBtn.textContent='Rezervuojama...'; backBtn.disabled=true;
         try {
-          const res=await fetch(apiUrl({action:'slots',service:selectedService.name}));
+          const res=await fetch(apiUrl({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId
+  :bookEventTypeId,service:selectedService?.name||''}));
           const data=await res.json();
-          if (data.error) throw new Error(data.error);
-          bookEventTypeId=data.eventTypeId; allSlots=data.slots; slotsForService=selectedService.name;
-          renderStep(3);
+          if (data.status==='error'||data.error) throw new Error(data.message||data.error);
+          bookingUid=data.data?.uid||data.uid||data.bookingId||data.id||null;
+          hideWizard(); setStep(0);
+          appendCard(`<div class="confirm-card">
+            <div class="confirm-icon">✓</div>
+            <div class="confirm-title">Vizitas užregistruotas!</div>
+            <div class="confirm-row">
+              <span class="confirm-row-icon">${selectedService?.icon}</span>
+              <div><div class="confirm-row-label">Paslauga</div><div
+  class="confirm-row-val">${selectedService?.name}</div></div>
+            </div>
+            <div class="confirm-row">
+              <span class="confirm-row-icon">📅</span>
+              <div><div class="confirm-row-label">Laikas</div><div
+  class="confirm-row-val">${selectedSlot.label}</div></div>
+            </div>
+            <div class="confirm-email">Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></div>
+            <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
+          </div>`);
         } catch {
-          nextBtn.disabled=false; nextBtn.textContent='Toliau →';
-          alert('Nepavyko gauti laisvų laikų. Bandykite vėliau.');
+          nextBtn.disabled=false; nextBtn.textContent='Patvirtinti ✓'; backBtn.disabled=false;
+          typeMessage('Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
         }
-      } else if (wizStep===3) {
-        if (!selectedSlot) return;
-        renderStep(4);
-      } else if (wizStep===4) {
-        await confirmBooking();
       }
-    }
 
-    function bookingBack() {
-      if (wizStep===1) { hideWizard(); setStep(0); }
-      else if (wizStep===2) renderStep(1);
-      else if (wizStep===3) renderStep(2);
-      else if (wizStep===4) renderStep(3);
-    }
-
-    async function confirmBooking() {
-      const nextBtn=document.getElementById('booking-next');
-      const backBtn=document.getElementById('booking-back');
-      nextBtn.disabled=true; nextBtn.textContent='Rezervuojama...'; backBtn.disabled=true;
-      try {
-        const res=await fetch(apiUrl({action:'book',start:selectedSlot.start,name:bookName,email:bookEmail,eventTypeId:bookEventTypeId,service:selectedService?.name||''}));
-        const data=await res.json();
-        if (data.status==='error'||data.error) throw new Error(data.message||data.error);
-        bookingUid=data.data?.uid||data.uid||data.bookingId||data.id||null;
-        hideWizard(); setStep(0);
-        appendCard(`<div class="confirm-card">
-          <div class="confirm-icon">✓</div>
-          <div class="confirm-title">Vizitas užregistruotas!</div>
-          <div class="confirm-row">
-            <span class="confirm-row-icon">${selectedService?.icon}</span>
-            <div><div class="confirm-row-label">Paslauga</div><div class="confirm-row-val">${selectedService?.name}</div></div>
-          </div>
-          <div class="confirm-row">
-            <span class="confirm-row-icon">📅</span>
-            <div><div class="confirm-row-label">Laikas</div><div class="confirm-row-val">${selectedSlot.label}</div></div>
-          </div>
-          <div class="confirm-email">Patvirtinimas išsiųstas į<br><strong>${bookEmail}</strong></div>
-          <button class="edit-btn" onclick="editBooking()">✏️ Keisti vizito laiką</button>
-        </div>`);
-      } catch {
-        nextBtn.disabled=false; nextBtn.textContent='Patvirtinti ✓'; backBtn.disabled=false;
-        typeMessage('Nepavyko užregistruoti. Bandykite dar kartą arba skambinkite tiesiogiai.');
+      function addMessage(role, text) {
+        const d = document.createElement('div');
+        d.className = 'msg ' + role;
+        d.innerHTML = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'')
+          .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>').trim();
+        msgs().appendChild(d); scrollBottom();
       }
-    }
 
-    function addMessage(role, text) {
-      const d = document.createElement('div');
-      d.className = 'msg ' + role;
-      d.innerHTML = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'')
-        .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>').trim();
-      msgs().appendChild(d); scrollBottom();
-    }
-
-    function typeMessage(text) {
-      const plain = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'').trim();
-      const d = document.createElement('div');
-      d.className = 'msg ai';
-      msgs().appendChild(d); scrollBottom();
-      const chars = [...plain];
-      let i = 0;
-      function step() {
-        i++;
-        d.textContent = chars.slice(0, i).join('');
-        scrollBottom();
-        if (i < chars.length) setTimeout(step, 18);
-        else d.innerHTML = plain.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-      }
-      step();
-    }
-
-    function appendCard(html) {
-      const d = document.createElement('div'); d.innerHTML = html;
-      msgs().appendChild(d.firstElementChild); scrollBottom();
-    }
-
-    function showTyping() {
-      const d = document.createElement('div');
-      d.className = 'typing'; d.id = 'typing-indicator';
-      d.innerHTML = '<span></span><span></span><span></span>';
-      msgs().appendChild(d); scrollBottom();
-    }
-    function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
-
-    function showBookingButton() {
-      if (bookingShown) return; bookingShown = true;
-      appendCard(`<div class="book-card">
-        <button onclick="startBooking()">📅 Rezervuoti vizitą</button></div>`);
-    }
-
-    function startBooking() { showWizard(); renderStep(1); }
-
-    async function editBooking() {
-      const btn = document.querySelector('.confirm-card .edit-btn');
-      if (btn) { btn.disabled=true; btn.textContent='Atšaukiama...'; }
-      try {
-        if (bookingUid) {
-          const res=await fetch(apiUrl({action:'cancel',bookingUid}));
-          const data=await res.json();
-          if (data.error) throw new Error(data.error);
+      function typeMessage(text) {
+        const plain = text.replace(/https?:\/\/cal\.com\/[^\s]*/g,'').trim();
+        const d = document.createElement('div');
+        d.className = 'msg ai';
+        msgs().appendChild(d); scrollBottom();
+        const chars = [...plain];
+        let i = 0;
+        function step() {
+          i++;
+          d.textContent = chars.slice(0, i).join('');
+          scrollBottom();
+          if (i < chars.length) setTimeout(step, 18);
+          else d.innerHTML = plain.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
         }
-        bookingUid=null;
-        document.querySelector('.confirm-card')?.remove();
-        showWizard();
-        selectedSlot=null; selectedDay=null; slotsForService=null;
-        renderStep(2);
-      } catch {
+        step();
+      }
+
+      function appendCard(html) {
+        const d = document.createElement('div'); d.innerHTML = html;
+        msgs().appendChild(d.firstElementChild); scrollBottom();
+      }
+
+      function showTyping() {
+        const d = document.createElement('div');
+        d.className = 'typing'; d.id = 'typing-indicator';
+        d.innerHTML = '<span></span><span></span><span></span>';
+        msgs().appendChild(d); scrollBottom();
+      }
+      function hideTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+      function showBookingButton() {
+        if (bookingShown) return; bookingShown = true;
+        appendCard(`<div class="book-card">
+          <button onclick="startBooking()">📅 Rezervuoti vizitą</button></div>`);
+      }
+
+      function startBooking() { showWizard(); renderStep(1); }
+
+      async function editBooking() {
+        const btn = document.querySelector('.confirm-card .edit-btn');
+        if (btn) { btn.disabled=true; btn.textContent='Atšaukiama...'; }
+        try {
+          if (bookingUid) {
+            const res=await fetch(apiUrl({action:'cancel',bookingUid}));
+            const data=await res.json();
+            if (data.error) throw new Error(data.error);
+          }
+          bookingUid=null;
+          document.querySelector('.confirm-card')?.remove();
+          showWizard();
+          selectedSlot=null; selectedDay=null; slotsForService=null;
+          renderStep(2);
+        } catch {
+          hideWizard();
+          if (btn){btn.disabled=false;btn.textContent='✏️ Keisti vizito laiką';}
+          typeMessage('Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
+        }
+      }
+
+      function setBodyLock(locked) {
+        if (window.innerWidth > 600) return;
+        document.body.style.overflow = locked ? 'hidden' : '';
+      }
+
+      function updateChatHeight() {
+        if (window.innerWidth > 600) return;
+        const panel = document.getElementById('chat-panel');
+        if (!panel.classList.contains('open')) return;
+        const vp = window.visualViewport;
+        if (vp) {
+          panel.style.height = vp.height + 'px';
+          panel.style.top = vp.offsetTop + 'px';
+        }
+      }
+
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateChatHeight);
+        window.visualViewport.addEventListener('scroll', updateChatHeight);
+      }
+
+      function toggleChat() {
+        const panel = document.getElementById('chat-panel');
+        panel.classList.toggle('open');
+        document.getElementById('chat-badge').style.display = 'none';
+        setBodyLock(panel.classList.contains('open'));
+        if (!chatOpened && panel.classList.contains('open')) {
+          chatOpened = true;
+          typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte
+  sužinoti?');
+          setTimeout(showBookingButton, 300);
+        }
+      }
+
+      function restartChat() {
         hideWizard();
-        if (btn){btn.disabled=false;btn.textContent='✏️ Keisti vizito laiką';}
-        typeMessage('Nepavyko atšaukti vizito. Skambinkite tiesiogiai: +370 600 00000');
-      }
-    }
-
-    function setBodyLock(locked) {
-      if (window.innerWidth > 600) return;
-      document.body.style.overflow = locked ? 'hidden' : '';
-    }
-
-    function updateChatHeight() {
-      if (window.innerWidth > 600) return;
-      const panel = document.getElementById('chat-panel');
-      if (!panel.classList.contains('open')) return;
-      const vp = window.visualViewport;
-      if (vp) {
-        panel.style.height = vp.height + 'px';
-        panel.style.top = vp.offsetTop + 'px';
-      }
-    }
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateChatHeight);
-      window.visualViewport.addEventListener('scroll', updateChatHeight);
-    }
-
-    function toggleChat() {
-      const panel = document.getElementById('chat-panel');
-      panel.classList.toggle('open');
-      document.getElementById('chat-badge').style.display = 'none';
-      // Hide attention arrows permanently once user notices the chat
-      document.getElementById('chat-arrows').style.display = 'none';
-      setBodyLock(panel.classList.contains('open'));
-      if (!chatOpened && panel.classList.contains('open')) {
-        chatOpened = true;
-        typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
+        document.getElementById('chat-messages').innerHTML='';
+        chatOpened=true; bookingShown=false;
+        bookName=''; bookEmail=''; bookEventTypeId=null; bookingUid=null;
+        selectedSlot=null; selectedDay=null; allSlots={};
+        selectedService=null; slotsForService=null;
+        setStep(0);
+        typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte
+  sužinoti?');
         setTimeout(showBookingButton, 300);
       }
-    }
 
-    function restartChat() {
-      hideWizard();
-      document.getElementById('chat-messages').innerHTML='';
-      chatOpened=true; bookingShown=false;
-      bookName=''; bookEmail=''; bookEventTypeId=null; bookingUid=null;
-      selectedSlot=null; selectedDay=null; allSlots={};
-      selectedService=null; slotsForService=null;
-      setStep(0);
-      typeMessage('Sveiki! 👋 Galiu papasakoti apie procedūras, kainas ar padėti užsiregistruoti. Ką norėtumėte sužinoti?');
-      setTimeout(showBookingButton, 300);
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById('chat-input');
-      const btn = document.getElementById('chat-send');
-      const text = input.value.trim();
-      if (!text) return;
-      const wantsBooking = hasBookingIntent(text);
-      addMessage('user', text);
-      input.value = ''; input.disabled = true; btn.disabled = true;
-      showTyping();
-      try {
-        const res = await fetch(apiUrl({message:text}));
-        const data = await res.json();
-        const reply = data.reply || 'Atsiprašau, įvyko klaida.';
-        hideTyping();
-        typeMessage( reply);
-        if (wantsBooking || hasBookingIntent(reply)) setTimeout(showBookingButton, 400);
-      } catch {
-        hideTyping();
-        typeMessage( 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
+      async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const btn = document.getElementById('chat-send');
+        const text = input.value.trim();
+        if (!text) return;
+        const wantsBooking = hasBookingIntent(text);
+        addMessage('user', text);
+        input.value = ''; input.disabled = true; btn.disabled = true;
+        showTyping();
+        try {
+          const res = await fetch(apiUrl({message:text}));
+          const data = await res.json();
+          const reply = data.reply || 'Atsiprašau, įvyko klaida.';
+          hideTyping();
+          typeMessage( reply);
+          if (wantsBooking || hasBookingIntent(reply)) setTimeout(showBookingButton, 400);
+        } catch {
+          hideTyping();
+          typeMessage( 'Atsiprašau, prarastas ryšys. Bandykite dar kartą.');
+        }
+        input.disabled = false; btn.disabled = false; input.focus();
       }
-      input.disabled = false; btn.disabled = false; input.focus();
-    }
 
-    document.getElementById('chat-input').addEventListener('keypress', e => {
-      if (e.key === 'Enter') sendMessage();
-    });
-  </script>
-</body>
-</html>
+      document.getElementById('chat-input').addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendMessage();
+      });
+    </script>
+  </body>
+  </html>
